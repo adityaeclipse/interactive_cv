@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aditya Sharma — Graphic Designer / Visual Artist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Roboto+Slab:wght@600;800;900&family=Manrope:wght@300;400;500;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c-bg: #050505; 
+    --c-surface: rgba(255, 255, 255, 0.02);
+    --c-border: rgba(255, 255, 255, 0.08);
+    --c-text: #ffffff;
+    --c-muted: rgba(255, 255, 255, 0.55);
+    
+    /* Vibrant Orange to Violet Theme */
+    --c-orange: #FF5E00; 
+    --c-violet: #A033FF;
+    --grad-primary: linear-gradient(135deg, var(--c-orange) 0%, var(--c-violet) 100%);
+  }
+
+  html { scroll-behavior: auto; } 
+
+  body {
+    background-color: var(--c-bg); color: var(--c-text);
+    font-family: 'Manrope', sans-serif; font-weight: 300; line-height: 1.7;
+    overflow-x: hidden; cursor: none;
+  }
+
+  /* ── FLAWLESS TYPOGRAPHY (No hyphenation, no widows) ── */
+  p, .skill-desc, .exp-desc { 
+    word-break: normal !important; 
+    overflow-wrap: break-word !important;
+    -webkit-hyphens: none !important; 
+    hyphens: none !important;
+    text-wrap: pretty; 
+  }
+
+  /* ── 1. GLOBAL BACKGROUND ── */
+  .bg-mesh-container { position: fixed; inset: -20%; z-index: -3; pointer-events: none; }
+  .bg-mesh { width: 100%; height: 100%; position: relative; background-color: var(--c-bg); overflow: hidden; }
+  .mesh-blob {
+    position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    background: #ffffff; animation: fluidFloat infinite alternate ease-in-out; will-change: transform;
+  }
+  .mesh-blob-1 { width: 70vw; height: 70vw; top: -10vh; left: -10vw; animation-duration: 15s; }
+  .mesh-blob-2 { width: 80vw; height: 80vw; bottom: -20vh; right: -20vw; animation-duration: 18s; animation-delay: -3s; }
+  .mesh-blob-3 { width: 60vw; height: 60vw; top: 40vh; left: 20vw; animation-duration: 16s; animation-delay: -5s; }
+
+  @keyframes fluidFloat { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(5vw, 3vh, 0) scale(1.05); } }
+
+  .bg-noise {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
+  }
+
+  /* Extended Vignette Blur */
+  .blur-vignette {
+    position: fixed; inset: 0; z-index: 90; pointer-events: none;
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(0,0,0,1) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(0,0,0,1) 100%);
+  }
+
+  /* ── 2. SCROLL PROGRESS BAR ── */
+  .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 1000; background: transparent; }
+  .progress-bar { height: 100%; width: 0%; background: var(--grad-primary); transition: width 0.1s ease; }
+
+  /* ── 3. INTERACTIVE CURSOR ── */
+  .cursor {
+    width: 14px; height: 14px; background: #fff; border-radius: 50%;
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+    will-change: transform, width, height; mix-blend-mode: difference;
+    transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+  }
+  .cursor-trail {
+    width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
+    will-change: transform; transition: transform 0.1s ease-out;
+  }
+  .cursor.clicking { transform: scale(0.6) !important; }
+
+  /* ── 4. FLOATING COLLAGE PREVIEW POPUP ── */
+  .work-preview {
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9997;
+    will-change: transform;
+  }
+  .work-preview-inner {
+    width: 460px;
+    padding: 16px; background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 94, 0, 0.3); border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(255, 94, 0, 0.15);
+    opacity: 0; transform: scale(0.85) translateY(20px);
+    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .work-preview.active .work-preview-inner { opacity: 1; transform: scale(1) translateY(0); }
+  
+  .preview-header { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-orange); margin-bottom: 12px; }
+  .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 120px; gap: 12px; }
+  .preview-grid img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); background: #111; }
+  .preview-grid img:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+  .preview-grid img:nth-child(2) { grid-column: span 1; grid-row: span 1; }
+  .preview-grid img:nth-child(3) { grid-column: span 1; grid-row: span 1; }
+  .preview-grid img:nth-child(4) { grid-column: span 3; grid-row: span 1; aspect-ratio: auto; }
+
+  /* ── 5. PAGE WRAPPER ── */
+  .page-wrapper { max-width: 1400px; margin: 0 auto; position: relative; background-color: var(--c-bg); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+
+  section { padding: 4.5rem 5rem; position: relative; }
+
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 1.5rem; }
+  .section-title { font-family: 'Instrument Serif', serif; font-size: clamp(3rem, 6vw, 4.8rem); font-style: italic; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 2rem; color: #fff; }
+
+  .hover-line { position: relative; text-decoration: none; display: inline-block; transition: color 0.3s; padding-bottom: 2px; }
+  .hover-line::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--grad-primary); transition: width 0.4s ease; }
+  .hover-line:hover { color: var(--c-text) !important; }
+  .hover-line:hover::after { width: 100%; }
+
+  /* ── HERO ── */
+  .hero { 
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative;
+    background-image: url('ADI01978.png'); background-size: cover; background-position: center;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.8) 70%, rgba(5,5,5,1) 100%); z-index: 0; pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); opacity: 0; animation: fadeUp 0.8s 0.2s forwards; margin-bottom: 1.5rem; }
+  
+  .slab-name { 
+    font-family: 'Roboto Slab', serif; font-weight: 800; font-size: clamp(4.5rem, 10vw, 9rem); 
+    text-transform: uppercase; line-height: 0.9; letter-spacing: -0.02em; opacity: 0; 
+    animation: fadeUp 0.9s 0.4s forwards; margin-bottom: 2rem; color: #fff; display: inline-block;
+  }
+  .glitch-word { display: inline-block; white-space: nowrap; cursor: crosshair; }
+  .glitch-word span { display: inline-block; min-width: 0.7ch; text-align: left; transition: color 0.2s; }
+  .block-font { font-family: 'Manrope', sans-serif !important; font-weight: 800 !important; color: var(--c-orange); }
+
+  .script-flare { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300; color: var(--c-orange); padding: 0 0.1em; font-size: 1.1em;}
+
+  .hero-role { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 300; color: var(--c-muted); opacity: 0; animation: fadeUp 0.9s 0.7s forwards; max-width: 580px; margin-bottom: 3.5rem; }
+  .hero-links { display: flex; gap: 2rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.9s 0.8s forwards; }
+  .hero-link { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
+
+  /* ── ABOUT ── */
+  .about-container { display: flex; flex-direction: column; gap: 2.5rem; }
+  .about-text { font-size: 1.25rem; line-height: 1.7; color: var(--c-muted); max-width: 100%; width: 100%; }
+  .about-text p + p { margin-top: 1.5rem; }
+  .about-text strong { color: var(--c-text); font-weight: 500; }
+
+  /* ── ORGANIC TEXTURED LIQUID GLASS EFFECTS ── */
+  .portfolio-cta, .glass-card {
+    position: relative; overflow: hidden;
+    background: var(--c-surface); border-radius: 20px;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.05); 
+    transform-style: preserve-3d; transition: transform 0.4s;
+  }
+  
+  .portfolio-cta::before, .glass-card::before {
+    content: ''; position: absolute;
+    top: var(--mouse-y, 50%); left: var(--mouse-x, 50%);
+    width: 450px; height: 450px;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.35'/%3E%3C/svg%3E"),
+      radial-gradient(circle, rgba(255, 94, 0, 0.4) 0%, rgba(160, 51, 255, 0.3) 40%, transparent 70%);
+    background-blend-mode: overlay, normal;
+    -webkit-mask-image: radial-gradient(circle, black 0%, transparent 65%);
+    mask-image: radial-gradient(circle, black 0%, transparent 65%);
+    transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; z-index: 0;
+  }
+  
+  .portfolio-cta::after, .glass-card::after {
+    content: ''; position: absolute; inset: 0;
+    border-radius: inherit; padding: 1.5px; 
+    background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 94, 0, 0.8), transparent 40%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none; opacity: 0; transition: opacity 0.4s ease; z-index: 2;
+  }
+
+  .portfolio-cta:hover::before, .portfolio-cta:hover::after,
+  .glass-card:hover::before, .glass-card:hover::after { opacity: 1; }
+  
+  .portfolio-cta-wrapper { display: inline-flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; padding: 10px 0; }
+  
+  .portfolio-cta { 
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+    padding: 1.2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--c-text); border-radius: 100px; text-decoration: none;
+    cursor: none; 
+  }
+  .portfolio-cta::before { width: 300px; height: 300px; } 
+  .portfolio-cta-text { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.75rem; pointer-events: none;}
+
+  .glass-content { position: relative; z-index: 1; transform: translateZ(30px); pointer-events: none; }
+  .glass-card { padding: 2.5rem; }
+
+  .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+  .stat-num { font-family: 'Instrument Serif', serif; font-size: 3.5rem; font-style: italic; line-height: 1; margin-bottom: 0.5rem; color: #fff; }
+  .stat-label { font-size: 0.95rem; color: var(--c-muted); font-family: 'Manrope', sans-serif;}
+
+  /* ── EXPERIENCE ── */
+  .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .exp-period { font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--c-muted); margin-bottom: 1.5rem; }
+  .exp-period span { display: inline-block; font-size: 0.7rem; color: var(--c-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; border: 1px solid var(--c-border); padding: 0.2rem 0.6rem; border-radius: 100px; transition: color 0.3s, border-color 0.3s;}
+  .glass-card:hover .exp-period span { color: #fff; border-color: rgba(255, 94, 0, 0.4); }
+  
+  .exp-company { font-family: 'Manrope', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--c-text); }
+  .exp-title { font-size: 0.85rem; color: var(--c-muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .exp-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; padding-top: 1.5rem; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid var(--c-border); color: var(--c-muted); }
+
+  /* ── CORPORATE DISCLAIMER ── */
+  .exp-disclaimer { margin-top: 3rem; text-align: center; border-top: 1px solid var(--c-border); padding-top: 1.5rem; }
+  .exp-disclaimer p { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--c-muted); }
+
+  /* ── SKILLS ── */
+  .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .skill-name { font-family: 'Manrope', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: var(--c-text); }
+
+  /* ── SOFTWARE ECOSYSTEM ── */
+  .software-section { margin-top: 4rem; }
+  .software-list { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; margin-top: 1.5rem;}
+  .software-item {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.8rem, 4vw, 3rem); 
+    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    transition: color 0.4s, -webkit-text-stroke 0.4s, text-shadow 0.4s, transform 0.4s;
+    cursor: none; line-height: 1; padding: 0.2rem 0;
+  }
+  .software-item:hover {
+    color: #fff; -webkit-text-stroke: 1px #fff;
+    text-shadow: 0 0 25px rgba(255, 94, 0, 0.6); 
+    transform: scale(1.05);
+  }
+
+  /* ── INTERESTS & LANGUAGES ── */
+  .languages-strip { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--c-border); }
+  .lang-title { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.15em; align-self: center;}
+  .lang-item { font-size: 0.95rem; color: #fff; font-weight: 500; }
+
+  /* ── CLIENTS MARQUEE ── */
+  .marquee-wrap { overflow: hidden; padding: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.03); background: transparent; opacity: 0.3; }
+  .marquee-inner { display: flex; width: max-content; animation: marquee 35s linear infinite; }
+  .marquee-content { display: flex; gap: 4rem; padding-right: 4rem; align-items: center; }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .client-name { font-family: 'DM Mono', monospace; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-text); }
+  .client-sep { color: var(--c-orange); font-size: 0.5rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+
+  /* ── NAV ── */
+  nav { 
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100; 
+    padding: 2rem 5rem; width: 100%; max-width: 1400px; 
+    display: flex; align-items: center; 
+  }
+  .nav-logo { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.8rem; color: #fff; text-decoration: none; margin-right: auto;}
+  .nav-links { display: flex; gap: 3rem; margin-right: 3rem;}
+  .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
+  
+  /* ── NAV CTA (Download PDF Button) ── */
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
+    font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #fff; text-decoration: none; background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px); transition: border-color 0.3s, background 0.3s;
+  }
+  .nav-cta:hover { background: rgba(255,255,255,0.06); border-color: var(--c-orange); }
+
+  /* ── FOOTER ── */
+  footer { padding: 6rem 5rem 3rem; border-top: 1px solid var(--c-border); display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
+  .footer-name { font-family: 'Roboto Slab', serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1; color: #fff; text-transform: uppercase; }
+  .footer-contact { text-align: right; }
+  .footer-contact a { display: block; font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--c-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em; text-decoration: none; transition: color 0.3s; }
+  .footer-contact a:hover { color: #fff; }
+  .footer-bottom { padding: 2rem 5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: rgba(240,237,245,0.3); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 900px) {
+    .about-stats, .exp-grid, .skills-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    section { padding: 5rem 2rem; }
+    nav, footer { padding: 2rem; }
+    .footer-bottom { padding: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="work-preview" id="workPreview">
+  <div class="work-preview-inner" id="workPreviewInner">
+    <div class="preview-header">Visual Context</div>
+    <div class="preview-grid" id="previewGrid"></div>
+  </div>
+</div>
+
+<div class="bg-mesh-container">
+  <div class="bg-mesh">
+    <div class="mesh-blob mesh-blob-1"></div>
+    <div class="mesh-blob mesh-blob-2"></div>
+    <div class="mesh-blob mesh-blob-3"></div>
+  </div>
+</div>
+<div class="bg-noise"></div>
+<div class="blur-vignette"></div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav>
+  <a class="nav-logo scroll-link" href="#top" id="navLogo">AS</a>
+  <div class="nav-links">
+    <a class="hover-line scroll-link" href="#about">About</a>
+    <a class="hover-line scroll-link" href="#experience">Experience</a>
+    <a class="hover-line scroll-link" href="#skills">Skills</a>
+  </div>
+  <a class="nav-cta" href="Aditya_Sharma_CV.pdf" download target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    PDF CV
+  </a>
+</nav>
+
+<div class="page-wrapper" id="top">
+  
+  <section class="hero">
+    <span class="hero-tag">Visual Artist & Graphic Designer</span>
+    
+    <div class="slab-name">
+      <div class="glitch-word" data-word="Aditya">
+        <span>A</span><span>d</span><span>i</span><span>t</span><span>y</span><span>a</span>
+      </div>
+      <br>
+      <div class="glitch-word" data-word="Sharma">
+        <span>S</span><span>h</span><span>a</span><span>r</span><span>m</span><span>a</span>
+      </div>
+    </div>
+
+    <p class="hero-role">Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.</p>
+    <div class="hero-links">
+      <a class="hero-link hover-line" href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
+      <a class="hero-link hover-line" href="https://www.artofstorms.in" target="_blank">artofstorms.in</a>
+      <a class="hero-link hover-line" href="tel:+919643118898">+91 9643-11 88 98</a>
+    </div>
+  </section>
+
+  <section id="about">
+    <p class="section-label reveal">01 — About</p>
+    <h2 class="section-title reveal reveal-delay-1">Designing with presence.</h2>
+
+    <div class="about-container">
+      <div class="about-text reveal reveal-delay-2">
+        <p>I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
+        <p>I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
+        <p>Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
+        
+        <div class="portfolio-cta-wrapper">
+          <a class="portfolio-cta preview-trigger" href="https://www.artofstorms.in" target="_blank" id="magnetic-btn" data-images="https://picsum.photos/seed/recent1/800/800, https://picsum.photos/seed/recent2/400/400, https://picsum.photos/seed/recent3/400/400, https://picsum.photos/seed/recent4/1000/400">
+            <span class="portfolio-cta-text">Recent Work <span style="font-family: sans-serif; font-size: 1.2em;">→</span></span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="about-stats reveal reveal-delay-2">
+        <div class="glass-card tilt">
+          <div class="glass-content">
+            <div class="stat-num">12+</div>
+            <div class="stat-label">Years of Experience</div>
+          </div>
+        </div>
+        <div class="glass-card tilt">
+          <div class="glass-content">
+            <div class="stat-num">20+</div>
+            <div class="stat-label">Brand Clients</div>
+          </div>
+        </div>
+        <div class="glass-card tilt">
+          <div class="glass-content">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Pixels Pushed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <p class="section-label reveal">02 — Experience</p>
+    <h2 class="section-title reveal reveal-delay-1">The Journey.</h2>
+
+    <div class="exp-grid">
+      <div class="glass-card tilt exp-item reveal">
+        <div class="glass-content">
+          <div class="exp-period"><span>Current</span><br>Dec 2021 — Present</div>
+          <div class="exp-company">KPMG Global Services</div>
+          <div class="exp-title">Marketing Communications Specialist</div>
+          <p class="exp-desc letter-anim">Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.</p>
+          <div class="exp-tags">
+            <span class="tag">Presentations</span><span class="tag">Motion Graphics</span><span class="tag">Event Collaterals</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card tilt exp-item reveal reveal-delay-1">
+        <div class="glass-content">
+          <div class="exp-period"><span>Previous</span><br>May 2019 — Dec 2021</div>
+          <div class="exp-company">Eurofins IT Solutions</div>
+          <div class="exp-title">Senior Graphic Designer</div>
+          <p class="exp-desc letter-anim">Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.</p>
+          <div class="exp-tags">
+            <span class="tag">Brand Design</span><span class="tag">Emailers</span><span class="tag">HR Comms</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card tilt exp-item reveal">
+        <div class="glass-content">
+          <div class="exp-period">Sept 2016 — April 2019</div>
+          <div class="exp-company">Graphic Era University</div>
+          <div class="exp-title">Graphic Designer</div>
+          <p class="exp-desc letter-anim">Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.</p>
+          <div class="exp-tags">
+            <span class="tag">Social Media</span><span class="tag">Web Design</span><span class="tag">Google Ads</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card tilt exp-item reveal reveal-delay-1">
+        <div class="glass-content">
+          <div class="exp-period">Aug 2014 — Sept 2016</div>
+          <div class="exp-company">Perfect Relations Pvt. Ltd.</div>
+          <div class="exp-title">Executive Creatives</div>
+          <p class="exp-desc letter-anim">Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.</p>
+          <div class="exp-tags">
+            <span class="tag">PR Agency</span><span class="tag">Product Ads</span><span class="tag">App UI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-disclaimer reveal reveal-delay-2">
+      <p><em>* Due to privacy and confidentiality agreements, extensive corporate project files are restricted from public display. Comprehensive portfolios and specific case studies are available upon request via email.</em></p>
+    </div>
+  </section>
+
+  <section id="skills">
+    <p class="section-label reveal">03 — Skills</p>
+    <h2 class="section-title reveal reveal-delay-1">Creative Toolkit.</h2>
+
+    <div class="skills-grid">
+      <div class="glass-card tilt reveal">
+        <div class="glass-content">
+          <div class="skill-name">Design & Visual Arts</div>
+          <div class="skill-desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
+        </div>
+      </div>
+      <div class="glass-card tilt reveal reveal-delay-1">
+        <div class="glass-content">
+          <div class="skill-name">Motion & Video</div>
+          <div class="skill-desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
+        </div>
+      </div>
+      <div class="glass-card tilt reveal reveal-delay-2">
+        <div class="glass-content">
+          <div class="skill-name">AI-Assisted Design</div>
+          <div class="skill-desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
+        </div>
+      </div>
+      
+      <div class="glass-card tilt reveal">
+        <div class="glass-content">
+          <div class="skill-name">Project Management</div>
+          <div class="skill-desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
+        </div>
+      </div>
+      
+      <div class="glass-card tilt reveal reveal-delay-1">
+        <div class="glass-content">
+          <div class="skill-name">Event Collaterals</div>
+          <div class="skill-desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
+        </div>
+      </div>
+      <div class="glass-card tilt reveal reveal-delay-2">
+        <div class="glass-content">
+          <div class="skill-name">Vibe Coding</div>
+          <div class="skill-desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="software-section reveal">
+      <p class="section-label">Software Ecosystem</p>
+      <div class="software-list">
+        <span class="software-item">Adobe Creative Suite</span>
+        <span class="software-item">Luminar</span>
+        <span class="software-item">Blender</span>
+        <span class="software-item">Powerpoint</span>
+        <span class="software-item">Final Cut Pro</span>
+        <span class="software-item">Logic Pro</span>
+        <span class="software-item">Ableton Live</span>
+        <span class="software-item">Claude + Gemini</span>
+        <span class="software-item">and more...</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="interests">
+    <p class="section-label reveal">04 — Interests</p>
+    <h2 class="section-title reveal reveal-delay-1">Beyond the <span class="script-flare">Screen</span></h2>
+
+    <div class="glass-card tilt reveal reveal-delay-2">
+      <div class="glass-content">
+        <p style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;">
+          When I step away from design, I play the piano and compose ambient music soundscapes. I also delve into visual art photography, capturing minimalist landscapes to continually refine my sense of composition and storytelling.
+        </p>
+      </div>
+    </div>
+
+    <div class="portfolio-cta-wrapper reveal reveal-delay-2">
+      <a class="portfolio-cta preview-trigger" href="https://aditya.bandcamp.com" target="_blank" data-images="https://picsum.photos/seed/audio1/800/800, https://picsum.photos/seed/audio2/400/400, https://picsum.photos/seed/audio3/400/400, https://picsum.photos/seed/audio4/1000/400">
+        <span class="portfolio-cta-text">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          Bandcamp
+        </span>
+      </a>
+      <a class="portfolio-cta preview-trigger" href="https://artofstorms.in/photos" target="_blank" data-images="https://picsum.photos/seed/cam1/800/800, https://picsum.photos/seed/cam2/400/400, https://picsum.photos/seed/cam3/400/400, https://picsum.photos/seed/cam4/1000/400">
+        <span class="portfolio-cta-text">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          Photography
+        </span>
+      </a>
+    </div>
+
+    <div class="languages-strip reveal">
+      <span class="lang-title">Languages</span>
+      <span class="lang-item">English (Bilingual)</span>
+      <span style="color:var(--c-muted);">·</span>
+      <span class="lang-item">Hindi (Bilingual)</span>
+      <span style="color:var(--c-muted);">·</span>
+      <span class="lang-item">Japanese (N5/N4)</span>
+    </div>
+  </section>
+
+  <div class="marquee-wrap">
+    <div class="marquee-inner">
+      <div class="marquee-content">
+        <span class="client-name">Air India</span><span class="client-sep">●</span>
+        <span class="client-name">FSSAI</span><span class="client-sep">●</span>
+        <span class="client-name">Auto Expo</span><span class="client-sep">●</span>
+        <span class="client-name">G4S Security</span><span class="client-sep">●</span>
+        <span class="client-name">Innisfree Cosmetics</span><span class="client-sep">●</span>
+        <span class="client-name">Vivo Mobiles</span><span class="client-sep">●</span>
+        <span class="client-name">DASNAC Group</span><span class="client-sep">●</span>
+        <span class="client-name">International Finance Corporation</span><span class="client-sep">●</span>
+        <span class="client-name">Indian National Congress</span><span class="client-sep">●</span>
+        <span class="client-name">Chintan</span><span class="client-sep">●</span>
+        <span class="client-name">Ritu Kumar</span><span class="client-sep">●</span>
+        <span class="client-name">Badiani NY</span><span class="client-sep">●</span>
+      </div>
+      <div class="marquee-content">
+        <span class="client-name">Air India</span><span class="client-sep">●</span>
+        <span class="client-name">FSSAI</span><span class="client-sep">●</span>
+        <span class="client-name">Auto Expo</span><span class="client-sep">●</span>
+        <span class="client-name">G4S Security</span><span class="client-sep">●</span>
+        <span class="client-name">Innisfree Cosmetics</span><span class="client-sep">●</span>
+        <span class="client-name">Vivo Mobiles</span><span class="client-sep">●</span>
+        <span class="client-name">DASNAC Group</span><span class="client-sep">●</span>
+        <span class="client-name">International Finance Corporation</span><span class="client-sep">●</span>
+        <span class="client-name">Indian National Congress</span><span class="client-sep">●</span>
+        <span class="client-name">Chintan</span><span class="client-sep">●</span>
+        <span class="client-name">Ritu Kumar</span><span class="client-sep">●</span>
+        <span class="client-name">Badiani NY</span><span class="client-sep">●</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>
+      <div class="footer-name">Aditya<br>Sharma</div>
+    </div>
+    <div class="footer-contact">
+      <a href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
+      <a href="tel:+919643118898">+91 9643-11 88 98</a>
+      <a href="https://linkedin.com/in/adityasharmadesign" target="_blank">LinkedIn</a>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <span>© 2026 Aditya Sharma</span>
+    <span>Gandhinagar, India</span>
+  </div>
+
+</div> 
+
+<script>
+  // 1. Initialize Lenis
+  const lenis = new Lenis({
+    duration: 0.8, 
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical', gestureDirection: 'vertical', smooth: true,
+  });
+
+  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+
+  // Smooth Scroll Interceptor
+  document.querySelectorAll('.scroll-link').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetElement = document.querySelector(this.getAttribute('href'));
+      if(targetElement) lenis.scrollTo(targetElement, { offset: 0, duration: 1.2 });
+    });
+  });
+
+  // 2. Scroll Progress Bar
+  lenis.on('scroll', (e) => {
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
+  });
+
+  // 3. Hardware Accelerated Custom Cursor & Click Physics
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let trailX = mouseX, trailY = mouseY;
+  
+  const updateCursorTransform = () => {
+    const scale = cursor.classList.contains('clicking') ? 'scale(0.6)' : 'scale(1)';
+    cursor.style.transform = `translate3d(${mouseX - 7}px, ${mouseY - 7}px, 0) ${scale}`;
+  };
+
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; updateCursorTransform(); });
+  document.addEventListener('mousedown', () => { cursor.classList.add('clicking'); updateCursorTransform(); });
+  document.addEventListener('mouseup', () => { cursor.classList.remove('clicking'); updateCursorTransform(); });
+
+  function animateTrail() {
+    trailX += (mouseX - trailX) * 0.2;
+    trailY += (mouseY - trailY) * 0.2;
+    trail.style.transform = `translate3d(${trailX - 20}px, ${trailY - 20}px, 0)`;
+    requestAnimationFrame(animateTrail);
+  }
+  animateTrail();
+
+  // Burst into vibrant color on hover
+  document.querySelectorAll('a, .glass-card, .software-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '40px'; cursor.style.height = '40px';
+      cursor.style.background = 'var(--grad-primary)'; cursor.style.mixBlendMode = 'normal'; cursor.style.border = 'none';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '14px'; cursor.style.height = '14px';
+      cursor.style.background = '#fff'; cursor.style.mixBlendMode = 'difference';
+    });
+  });
+
+  // 4. Floating Collage Logic
+  const workPreview = document.getElementById('workPreview');
+  const previewGrid = document.getElementById('previewGrid');
+  let targetPreviewX = mouseX, targetPreviewY = mouseY;
+  let currentPreviewX = mouseX, currentPreviewY = mouseY;
+
+  function animatePreview() {
+    currentPreviewX += (targetPreviewX - currentPreviewX) * 0.12;
+    currentPreviewY += (targetPreviewY - currentPreviewY) * 0.12;
+    workPreview.style.transform = `translate3d(${currentPreviewX}px, ${currentPreviewY}px, 0)`;
+    requestAnimationFrame(animatePreview);
+  }
+  animatePreview();
+
+  // Attached to the Buttons instead of the Job Cards
+  document.querySelectorAll('.preview-trigger').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      const images = item.getAttribute('data-images').split(',');
+      previewGrid.innerHTML = images.map(img => `<img src="${img.trim()}" alt="Work Preview">`).join('');
+      workPreview.classList.add('active');
+    });
+    item.addEventListener('mousemove', () => {
+      targetPreviewX = mouseX + 20; targetPreviewY = mouseY + 20;
+      if (targetPreviewX + 480 > window.innerWidth) targetPreviewX = mouseX - 480;
+      if (targetPreviewY + 400 > window.innerHeight) targetPreviewY = mouseY - 400;
+    });
+    item.addEventListener('mouseleave', () => { workPreview.classList.remove('active'); });
+  });
+
+  // 5. Liquid Glass Hover Glow + Edge Glow + 3D Tilt
+  document.querySelectorAll('.glass-card, .portfolio-cta').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`);
+      
+      if(card.classList.contains('tilt')) {
+        const multiplier = 10; 
+        const xRotate = multiplier * ((y - rect.height / 2) / rect.height);
+        const yRotate = -multiplier * ((x - rect.width / 2) / rect.width);
+        card.style.transform = `perspective(1000px) rotateX(${xRotate}deg) rotateY(${yRotate}deg) scale3d(1.02, 1.02, 1.02)`;
+        card.style.transition = 'none'; 
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      if(card.classList.contains('tilt')) {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'; 
+      }
+    });
+  });
+
+  // 6. Flawless Word-Preserving Animation Engine
+  // Instead of breaking by letter which causes hyphenation, we group spans into inline-block words
+  document.querySelectorAll('.letter-anim').forEach(el => {
+    const text = el.textContent; el.textContent = ''; 
+    const words = text.split(' ');
+    let charIndex = 0;
+    
+    words.forEach((word, wIdx) => {
+      const wordSpan = document.createElement('span');
+      wordSpan.style.display = 'inline-block'; // Protects word from breaking
+      wordSpan.style.whiteSpace = 'nowrap';
+      
+      word.split('').forEach((char) => {
+        const charSpan = document.createElement('span');
+        charSpan.textContent = char; 
+        charSpan.style.opacity = '0'; 
+        charSpan.style.display = 'inline-block'; 
+        charSpan.style.transform = 'translateY(5px)';
+        charSpan.style.transition = `opacity 0.05s ease ${charIndex * 0.005}s, transform 0.05s ease ${charIndex * 0.005}s`;
+        wordSpan.appendChild(charSpan);
+        charIndex++;
+      });
+      
+      el.appendChild(wordSpan);
+      
+      if(wIdx < words.length - 1) {
+        const spaceSpan = document.createElement('span');
+        spaceSpan.innerHTML = '&nbsp;';
+        el.appendChild(spaceSpan);
+      }
+    });
+  });
+
+  // 7. Magnetic Button Physics (Applies to all .portfolio-cta classes)
+  document.querySelectorAll('.portfolio-cta').forEach(btn => {
+    btn.addEventListener('mousemove', function(e) {
+      const rect = this.getBoundingClientRect();
+      const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.3; 
+      const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.3;
+      this.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.transform = 'translate3d(0,0,0)';
+      this.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    });
+    btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
+  });
+
+  // 8. Katakana Matrix Glitch Logic for First/Last Name Independently
+  const glitchScripts = {
+    Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], // Katakana
+    Sharma: ['シ', 'ャ', 'ル', 'マ', '', '']  // Corrected Katakana (シャルマ)
+  };
+
+  document.querySelectorAll('.glitch-word').forEach(wordEl => {
+    const origWord = wordEl.getAttribute('data-word');
+    const spans = wordEl.querySelectorAll('span');
+    const katakanaChars = glitchScripts[origWord];
+    const englishChars = origWord.split('');
+    let timeouts = [];
+
+    const clearAllTimeouts = () => { timeouts.forEach(t => clearTimeout(t)); timeouts = []; };
+
+    const doGlitch = (toEnglish) => {
+      clearAllTimeouts();
+      const targetScript = toEnglish ? englishChars : katakanaChars;
+
+      spans.forEach((span, i) => {
+        const delay = Math.random() * 350; 
+        const t = setTimeout(() => {
+          if (targetScript[i] === '') {
+              span.style.display = 'none';
+          } else {
+              span.style.display = 'inline-block';
+              span.textContent = targetScript[i];
+          }
+          if (toEnglish) {
+            span.classList.remove('block-font');
+          } else {
+            span.classList.add('block-font');
+          }
+        }, delay);
+        timeouts.push(t);
+      });
+    };
+
+    wordEl.addEventListener('mouseenter', () => {
+      doGlitch(false); 
+    });
+
+    wordEl.addEventListener('mouseleave', () => {
+      doGlitch(true); 
+    });
+  });
+
+  // 9. Intersection Observer
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { 
+        e.target.classList.add('visible'); 
+        if (e.target.classList.contains('letter-anim')) {
+          e.target.querySelectorAll('span').forEach(span => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; });
+        }
+        io.unobserve(e.target); 
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+  
+  document.querySelectorAll('.reveal, .letter-anim').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
