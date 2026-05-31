@@ -199,7 +199,8 @@
   .portfolio-cta { 
     display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
     padding: 1.2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--c-text); border-radius: 100px; text-decoration: none; cursor: none; 
+    color: var(--c-text); border-radius: 100px; text-decoration: none;
+    cursor: none; 
   }
   .portfolio-cta::before { width: 300px; height: 300px; } 
   .portfolio-cta-text { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.75rem; pointer-events: none;}
@@ -314,6 +315,7 @@
     }
     .glass-card::after, .portfolio-cta::after { display: none !important; }
     
+    /* Shrinks Katakana even further on mobile phones so it perfectly matches English width */
     .block-font { font-size: 0.75em !important; }
   }
 </style>
@@ -388,9 +390,9 @@
 
     <div class="about-container">
       <div class="about-text reveal reveal-delay-2">
-        <p data-i18n="about_p1">I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
-        <p data-i18n="about_p2">I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
-        <p data-i18n="about_p3">Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
+        <p class="letter-anim" data-i18n="about_p1">I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
+        <p class="letter-anim" data-i18n="about_p2">I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
+        <p class="letter-anim" data-i18n="about_p3">Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
         
         <div class="portfolio-cta-wrapper">
           <a class="portfolio-cta preview-trigger" href="https://www.artofstorms.in" target="_blank" id="magnetic-btn" data-images="site1.jpeg">
@@ -489,39 +491,39 @@
       <div class="glass-card tilt reveal">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_1_name">Design & Visual Arts</div>
-          <div class="skill-desc" data-i18n="skill_1_desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_1_desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_2_name">Motion & Video</div>
-          <div class="skill-desc" data-i18n="skill_2_desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_2_desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_3_name">AI-Assisted Design</div>
-          <div class="skill-desc" data-i18n="skill_3_desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_3_desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
         </div>
       </div>
       
       <div class="glass-card tilt reveal">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_4_name">Project Management</div>
-          <div class="skill-desc" data-i18n="skill_4_desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_4_desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
         </div>
       </div>
       
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_5_name">Event Collaterals</div>
-          <div class="skill-desc" data-i18n="skill_5_desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_5_desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_6_name">Vibe Coding</div>
-          <div class="skill-desc" data-i18n="skill_6_desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
+          <div class="skill-desc letter-anim" data-i18n="skill_6_desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
         </div>
       </div>
     </div>
@@ -548,7 +550,7 @@
 
     <div class="glass-card tilt reveal reveal-delay-2">
       <div class="glass-content">
-        <p style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;" data-i18n="int_desc">
+        <p class="letter-anim" style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;" data-i18n="int_desc">
           When I step away from design, I play the piano and compose ambient music soundscapes. I also delve into visual art photography, capturing minimalist landscapes to continually refine my sense of composition and storytelling.
         </p>
       </div>
@@ -652,6 +654,8 @@
   lenis.on('scroll', (e) => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
+    const bgMesh = document.getElementById("bgMeshContainer");
+    if (bgMesh) { bgMesh.style.transform = `translateY(${e.scroll * 0.15}px)`; }
   });
 
   // ── I18N REAL-TIME TRANSLATION DICTIONARY ──
@@ -720,6 +724,7 @@
 
   let currentLang = 'en';
   
+  // Custom Function to Flawlessly Render and Wrap Words
   function applyLetterAnim(el, textContent) {
     el.innerHTML = '';
     const words = textContent.split(' ');
@@ -727,8 +732,14 @@
     
     words.forEach((word, wIdx) => {
       const wordSpan = document.createElement('span');
-      wordSpan.style.display = 'inline-block'; 
-      wordSpan.style.whiteSpace = 'nowrap';
+      // CRITICAL FIX: Only apply 'nowrap' if the language is English. 
+      // Japanese natively wraps by character, so 'nowrap' forces it into a single line.
+      if (currentLang === 'en') {
+        wordSpan.style.display = 'inline-block'; 
+        wordSpan.style.whiteSpace = 'nowrap';
+      } else {
+        wordSpan.style.display = 'inline';
+      }
       
       word.split('').forEach((char) => {
         const charSpan = document.createElement('span');
@@ -747,8 +758,10 @@
     }
   }
 
+  // Initial Load of Animations
   document.querySelectorAll('.letter-anim').forEach(el => applyLetterAnim(el, el.textContent));
 
+  // Language Toggle Logic
   document.getElementById('langToggle').addEventListener('click', function() {
     currentLang = currentLang === 'en' ? 'jp' : 'en';
     this.innerText = currentLang === 'en' ? 'EN / JP' : 'JP / EN';
@@ -764,6 +777,7 @@
       }
     });
 
+    // Reset Katakana Glitch Names to reflect current language instantly
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       wordEl.dispatchEvent(new Event('mouseleave'));
     });
@@ -860,6 +874,7 @@
       btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
     });
 
+    // Smart Katakana Glitch for Desktop
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       const origWord = wordEl.getAttribute('data-word');
