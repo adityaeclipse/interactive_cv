@@ -145,7 +145,7 @@
     font-family: 'Manrope', sans-serif !important; 
     font-weight: 800 !important; 
     color: var(--c-orange); 
-    font-size: 0.85em; /* Scales block characters down relative to English */
+    font-size: 0.85em; 
   }
 
   .script-flare { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300; color: var(--c-orange); padding: 0 0.1em; font-size: 1.1em;}
@@ -314,7 +314,6 @@
     }
     .glass-card::after, .portfolio-cta::after { display: none !important; }
     
-    /* Shrinks Katakana even further on mobile phones so it perfectly matches English width */
     .block-font { font-size: 0.75em !important; }
   }
 </style>
@@ -615,7 +614,7 @@
 
   <footer>
     <div>
-      <div class="footer-name">Aditya<br>Sharma</div>
+      <div class="footer-name" data-i18n="footer_name">Aditya<br>Sharma</div>
     </div>
     <div class="footer-contact">
       <a href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
@@ -653,8 +652,6 @@
   lenis.on('scroll', (e) => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
-    const bgMesh = document.getElementById("bgMeshContainer");
-    if (bgMesh) { bgMesh.style.transform = `translateY(${e.scroll * 0.15}px)`; }
   });
 
   // ── I18N REAL-TIME TRANSLATION DICTIONARY ──
@@ -717,12 +714,12 @@
     lang_en: { en: "English (Bilingual)", jp: "英語（バイリンガル）" },
     lang_hi: { en: "Hindi (Bilingual)", jp: "ヒンディー語（バイリンガル）" },
     lang_jp: { en: "Japanese (N5/N4)", jp: "日本語（N5/N4）" },
-    location: { en: "Gandhinagar, India", jp: "インド、ガンディーナガル" }
+    location: { en: "Gandhinagar, India", jp: "インド、ガンディーナガル" },
+    footer_name: { en: "Aditya<br>Sharma", jp: "アディティヤ<br>シャルマ" }
   };
 
   let currentLang = 'en';
   
-  // Custom Function to Flawlessly Render and Wrap Words
   function applyLetterAnim(el, textContent) {
     el.innerHTML = '';
     const words = textContent.split(' ');
@@ -750,10 +747,8 @@
     }
   }
 
-  // Initial Load of Animations
   document.querySelectorAll('.letter-anim').forEach(el => applyLetterAnim(el, el.textContent));
 
-  // Language Toggle Logic
   document.getElementById('langToggle').addEventListener('click', function() {
     currentLang = currentLang === 'en' ? 'jp' : 'en';
     this.innerText = currentLang === 'en' ? 'EN / JP' : 'JP / EN';
@@ -769,7 +764,6 @@
       }
     });
 
-    // Reset Katakana Glitch Names to reflect current language instantly
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       wordEl.dispatchEvent(new Event('mouseleave'));
     });
@@ -866,7 +860,6 @@
       btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
     });
 
-    // Smart Katakana Glitch for Desktop (Respects Language Toggle)
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       const origWord = wordEl.getAttribute('data-word');
@@ -878,7 +871,6 @@
       const doGlitch = (isHovering) => {
         timeouts.forEach(t => clearTimeout(t)); timeouts = [];
         
-        // If English and not hovering OR if JP and hovering -> Show English
         const showEnglish = (currentLang === 'en' && !isHovering) || (currentLang === 'jp' && isHovering);
         const targetScript = showEnglish ? englishChars : katakanaChars;
 
@@ -932,7 +924,7 @@
           });
 
           setTimeout(() => {
-            if(currentLang === 'jp') return; // Don't revert if they toggled JP
+            if(currentLang === 'jp') return; 
             spans.forEach((span, i) => {
               setTimeout(() => {
                 span.style.display = 'inline-block'; span.textContent = englishChars[i]; span.classList.remove('block-font');
