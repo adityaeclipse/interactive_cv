@@ -18,7 +18,6 @@
     --c-text: #ffffff;
     --c-muted: rgba(255, 255, 255, 0.55);
     
-    /* Vibrant Orange to Violet Theme */
     --c-orange: #FF5E00; 
     --c-violet: #A033FF;
     --grad-primary: linear-gradient(135deg, var(--c-orange) 0%, var(--c-violet) 100%);
@@ -32,7 +31,7 @@
     overflow-x: hidden; cursor: none;
   }
 
-  /* ── FLAWLESS TYPOGRAPHY (No hyphenation, no widows) ── */
+  /* ── STRICT TYPOGRAPHY (Forces whole words only) ── */
   p, .skill-desc, .exp-desc { 
     word-break: normal !important; 
     overflow-wrap: break-word !important;
@@ -59,7 +58,6 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
   }
 
-  /* Extended Vignette Blur */
   .blur-vignette {
     position: fixed; inset: 0; z-index: 90; pointer-events: none;
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -220,7 +218,7 @@
   .tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid var(--c-border); color: var(--c-muted); }
 
   /* ── CORPORATE DISCLAIMER ── */
-  .exp-disclaimer { margin-top: 3rem; text-align: center; border-top: 1px solid var(--c-border); padding-top: 1.5rem; }
+  .exp-disclaimer { margin-top: 3rem; text-align: left; border-top: 1px solid var(--c-border); padding-top: 1.5rem; }
   .exp-disclaimer p { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--c-muted); }
 
   /* ── SKILLS ── */
@@ -273,7 +271,6 @@
   .nav-links { display: flex; gap: 3rem; margin-right: 3rem;}
   .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
   
-  /* ── NAV CTA (Download PDF Button) ── */
   .nav-cta {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
@@ -293,34 +290,29 @@
 
   /* ── MOBILE OPTIMIZATION OVERRIDES ── */
   @media (hover: none) and (pointer: coarse), (max-width: 900px) {
-    /* Restore native touch behaviors and cursor */
     body, .glitch-word, .portfolio-cta, .software-item, a { cursor: auto !important; }
-    
-    /* Hide desktop-only mouse UI */
     .cursor, .cursor-trail, .work-preview { display: none !important; }
     
-    /* Layout adjustments for small screens */
     section { padding: 4rem 1.5rem; }
     nav { padding: 1.5rem; }
     .page-wrapper { margin: 0; width: 100%; box-shadow: none; }
     .about-stats, .exp-grid, .skills-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
-    .footer-bottom { padding: 2rem 1.5rem; }
-    footer { padding: 4rem 1.5rem 2rem; }
     
-    /* Make buttons friendly for tapping */
+    /* Footer Stack Fix */
+    footer { flex-direction: column; align-items: flex-start; gap: 3rem; padding: 4rem 1.5rem 2rem; }
+    .footer-contact { text-align: left; }
+    .footer-bottom { padding: 2rem 1.5rem; }
+    
     .portfolio-cta-wrapper { flex-direction: column; width: 100%; padding: 0; }
     .portfolio-cta { width: 100%; margin-bottom: 1rem; }
     
-    /* Freeze Liquid Glass into a beautiful static state for mobile */
+    /* Dynamic Liquid Glass for Mobile Scroll */
     .glass-card::before, .portfolio-cta::before {
-      opacity: 0.85 !important;
-      top: 50% !important; left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      width: 150% !important; height: 150% !important;
-      background-image: radial-gradient(circle, rgba(255, 94, 0, 0.12) 0%, rgba(160, 51, 255, 0.08) 60%, transparent 100%) !important;
+      opacity: 0.9 !important;
+      transition: none !important; 
+      width: 350px !important; height: 350px !important; 
     }
-    /* Disable edge glow tracking for mobile */
     .glass-card::after, .portfolio-cta::after { display: none !important; }
   }
 </style>
@@ -336,7 +328,7 @@
   </div>
 </div>
 
-<div class="bg-mesh-container">
+<div class="bg-mesh-container" id="bgMeshContainer">
   <div class="bg-mesh">
     <div class="mesh-blob mesh-blob-1"></div>
     <div class="mesh-blob mesh-blob-2"></div>
@@ -633,11 +625,9 @@
 </div> 
 
 <script>
-  // 0. Hardware Detection Check (Desktop vs Mobile/Touch)
-  // If the user has a fine pointing device (mouse) and can hover, isDesktop = true
   const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  // 1. Initialize Smooth Scroll (Lenis)
+  // 1. Initialize Lenis Smooth Scroll
   const lenis = new Lenis({
     duration: 0.8, 
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -647,6 +637,7 @@
   function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
   requestAnimationFrame(raf);
 
+  // Smooth Scroll Interceptor
   document.querySelectorAll('.scroll-link').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       e.preventDefault();
@@ -655,12 +646,17 @@
     });
   });
 
+  // Global Scroll Parallax & Progress Bar
   lenis.on('scroll', (e) => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
+    
+    // Background mesh parallax
+    const bgMesh = document.getElementById("bgMeshContainer");
+    if (bgMesh) { bgMesh.style.transform = `translateY(${e.scroll * 0.15}px)`; }
   });
 
-  // ── DESKTOP ONLY LOGIC (Mouse Tracking, Glitch Hovers, Popups) ──
+  // ── DESKTOP ONLY LOGIC ──
   if (isDesktop) {
     const cursor = document.getElementById('cursor');
     const trail = document.getElementById('cursorTrail');
@@ -676,7 +672,6 @@
     document.addEventListener('mousedown', () => { cursor.classList.add('clicking'); updateCursorTransform(); });
     document.addEventListener('mouseup', () => { cursor.classList.remove('clicking'); updateCursorTransform(); });
 
-    // Floating Collage Logic
     const workPreview = document.getElementById('workPreview');
     const previewGrid = document.getElementById('previewGrid');
     let targetPreviewX = mouseX, targetPreviewY = mouseY;
@@ -755,8 +750,7 @@
       });
       btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
     });
-    
-    // Katakana Glitch for Desktop (Hover)
+
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       const origWord = wordEl.getAttribute('data-word');
@@ -782,8 +776,31 @@
     });
   } 
 
-  // ── MOBILE ONLY LOGIC (Scroll-triggered Glitch) ──
+  // ── MOBILE ONLY LOGIC ──
   else {
+    // Dynamic Scroll Lighting for Mobile Cards
+    const mobileCards = document.querySelectorAll('.glass-card, .portfolio-cta');
+    lenis.on('scroll', () => {
+      const vh = window.innerHeight;
+      mobileCards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        // Check if card is within the viewport
+        if (rect.top < vh && rect.bottom > 0) {
+          // Progress goes from 0 (entering from bottom) to 1 (leaving top)
+          const percent = (vh - rect.top) / (vh + rect.height);
+          
+          // Move the lighting gradient from top to bottom as user scrolls
+          const y = percent * rect.height;
+          // Organic drift left and right
+          const x = (0.5 + Math.sin(percent * Math.PI) * 0.3) * rect.width;
+          
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        }
+      });
+    });
+
+    // Mobile Scroll-triggered Katakana Glitch
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     const mobileGlitchObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -794,7 +811,6 @@
           const katakanaChars = glitchScripts[origWord];
           const englishChars = origWord.split('');
           
-          // Glitch to Katakana
           spans.forEach((span, i) => {
             setTimeout(() => {
               if (katakanaChars[i] === '') span.style.display = 'none';
@@ -802,7 +818,6 @@
             }, Math.random() * 350);
           });
 
-          // Glitch back to English after 2 seconds
           setTimeout(() => {
             spans.forEach((span, i) => {
               setTimeout(() => {
@@ -819,9 +834,7 @@
     document.querySelectorAll('.glitch-word').forEach(el => mobileGlitchObserver.observe(el));
   }
 
-  // ── GLOBAL ANIMATIONS (Runs on both Mobile and Desktop) ──
-  
-  // Flawless Word-Preserving Animation Engine
+  // ── GLOBAL ANIMATIONS ──
   document.querySelectorAll('.letter-anim').forEach(el => {
     const text = el.textContent; el.textContent = ''; 
     const words = text.split(' ');
@@ -829,7 +842,7 @@
     
     words.forEach((word, wIdx) => {
       const wordSpan = document.createElement('span');
-      wordSpan.style.display = 'inline-block'; // Protects word from breaking
+      wordSpan.style.display = 'inline-block'; 
       wordSpan.style.whiteSpace = 'nowrap';
       
       word.split('').forEach((char) => {
@@ -845,7 +858,6 @@
     });
   });
 
-  // Intersection Observer for Reveal Fades
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { 
