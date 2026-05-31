@@ -17,7 +17,6 @@
     --c-border: rgba(255, 255, 255, 0.08);
     --c-text: #ffffff;
     --c-muted: rgba(255, 255, 255, 0.55);
-    
     --c-orange: #FF5E00; 
     --c-violet: #A033FF;
     --grad-primary: linear-gradient(135deg, var(--c-orange) 0%, var(--c-violet) 100%);
@@ -31,7 +30,7 @@
     overflow-x: hidden; cursor: none;
   }
 
-  /* ── STRICT TYPOGRAPHY (Forces whole words only) ── */
+  /* ── STRICT TYPOGRAPHY ── */
   p, .skill-desc, .exp-desc { 
     word-break: normal !important; 
     overflow-wrap: break-word !important;
@@ -140,7 +139,14 @@
   }
   .glitch-word { display: inline-block; white-space: nowrap; cursor: crosshair; }
   .glitch-word span { display: inline-block; min-width: 0.7ch; text-align: left; transition: color 0.2s; }
-  .block-font { font-family: 'Manrope', sans-serif !important; font-weight: 800 !important; color: var(--c-orange); }
+  
+  /* Ensures Katakana fits perfectly without overflowing */
+  .block-font { 
+    font-family: 'Manrope', sans-serif !important; 
+    font-weight: 800 !important; 
+    color: var(--c-orange); 
+    font-size: 0.85em; /* Scales block characters down relative to English */
+  }
 
   .script-flare { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300; color: var(--c-orange); padding: 0 0.1em; font-size: 1.1em;}
 
@@ -193,8 +199,7 @@
   .portfolio-cta { 
     display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
     padding: 1.2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--c-text); border-radius: 100px; text-decoration: none;
-    cursor: none; 
+    color: var(--c-text); border-radius: 100px; text-decoration: none; cursor: none; 
   }
   .portfolio-cta::before { width: 300px; height: 300px; } 
   .portfolio-cta-text { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.75rem; pointer-events: none;}
@@ -235,11 +240,7 @@
     transition: color 0.4s, -webkit-text-stroke 0.4s, text-shadow 0.4s, transform 0.4s;
     cursor: none; line-height: 1; padding: 0.2rem 0;
   }
-  .software-item:hover {
-    color: #fff; -webkit-text-stroke: 1px #fff;
-    text-shadow: 0 0 25px rgba(255, 94, 0, 0.6); 
-    transform: scale(1.05);
-  }
+  .software-item:hover { color: #fff; -webkit-text-stroke: 1px #fff; text-shadow: 0 0 25px rgba(255, 94, 0, 0.6); transform: scale(1.05); }
 
   /* ── INTERESTS & LANGUAGES ── */
   .languages-strip { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--c-border); }
@@ -271,14 +272,15 @@
   .nav-links { display: flex; gap: 3rem; margin-right: 3rem;}
   .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
   
+  .nav-actions { display: flex; gap: 1rem; align-items: center; }
   .nav-cta {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
     font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: #fff; text-decoration: none; background: rgba(255,255,255,0.02);
-    backdrop-filter: blur(10px); transition: border-color 0.3s, background 0.3s;
+    color: #fff; text-decoration: none; background: rgba(255,255,255,0.02); cursor: none;
+    backdrop-filter: blur(10px); transition: border-color 0.3s, background 0.3s, color 0.3s;
   }
-  .nav-cta:hover { background: rgba(255,255,255,0.06); border-color: var(--c-orange); }
+  .nav-cta:hover { background: rgba(255,255,255,0.06); border-color: var(--c-orange); color: #fff; }
 
   /* ── FOOTER ── */
   footer { padding: 6rem 5rem 3rem; border-top: 1px solid var(--c-border); display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
@@ -290,7 +292,7 @@
 
   /* ── MOBILE OPTIMIZATION OVERRIDES ── */
   @media (hover: none) and (pointer: coarse), (max-width: 900px) {
-    body, .glitch-word, .portfolio-cta, .software-item, a { cursor: auto !important; }
+    body, .glitch-word, .portfolio-cta, .software-item, a, button { cursor: auto !important; }
     .cursor, .cursor-trail, .work-preview { display: none !important; }
     
     section { padding: 4rem 1.5rem; }
@@ -299,7 +301,6 @@
     .about-stats, .exp-grid, .skills-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
     
-    /* Footer Stack Fix */
     footer { flex-direction: column; align-items: flex-start; gap: 3rem; padding: 4rem 1.5rem 2rem; }
     .footer-contact { text-align: left; }
     .footer-bottom { padding: 2rem 1.5rem; }
@@ -307,13 +308,14 @@
     .portfolio-cta-wrapper { flex-direction: column; width: 100%; padding: 0; }
     .portfolio-cta { width: 100%; margin-bottom: 1rem; }
     
-    /* Dynamic Liquid Glass for Mobile Scroll */
     .glass-card::before, .portfolio-cta::before {
-      opacity: 0.9 !important;
-      transition: none !important; 
+      opacity: 0.9 !important; transition: none !important; 
       width: 350px !important; height: 350px !important; 
     }
     .glass-card::after, .portfolio-cta::after { display: none !important; }
+    
+    /* Shrinks Katakana even further on mobile phones so it perfectly matches English width */
+    .block-font { font-size: 0.75em !important; }
   }
 </style>
 </head>
@@ -344,20 +346,24 @@
 <nav>
   <a class="nav-logo scroll-link" href="#top" id="navLogo">AS</a>
   <div class="nav-links">
-    <a class="hover-line scroll-link" href="#about">About</a>
-    <a class="hover-line scroll-link" href="#experience">Experience</a>
-    <a class="hover-line scroll-link" href="#skills">Skills</a>
+    <a class="hover-line scroll-link" href="#about" data-i18n="nav_about">About</a>
+    <a class="hover-line scroll-link" href="#experience" data-i18n="nav_exp">Experience</a>
+    <a class="hover-line scroll-link" href="#skills" data-i18n="nav_skills">Skills</a>
   </div>
-  <a class="nav-cta" href="Aditya_Sharma_CV.pdf" download target="_blank">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-    PDF CV
-  </a>
+  
+  <div class="nav-actions">
+    <button class="nav-cta" id="langToggle">EN / JP</button>
+    <a class="nav-cta" href="Aditya_Sharma_CV.pdf" download target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <span data-i18n="nav_cv">PDF CV</span>
+    </a>
+  </div>
 </nav>
 
 <div class="page-wrapper" id="top">
   
   <section class="hero">
-    <span class="hero-tag">Visual Artist & Graphic Designer</span>
+    <span class="hero-tag" data-i18n="hero_tag">Visual Artist & Graphic Designer</span>
     
     <div class="slab-name">
       <div class="glitch-word" data-word="Aditya">
@@ -369,7 +375,7 @@
       </div>
     </div>
 
-    <p class="hero-role">Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.</p>
+    <p class="hero-role" data-i18n="hero_role">Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.</p>
     <div class="hero-links">
       <a class="hero-link hover-line" href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
       <a class="hero-link hover-line" href="https://www.artofstorms.in" target="_blank">artofstorms.in</a>
@@ -378,18 +384,18 @@
   </section>
 
   <section id="about">
-    <p class="section-label reveal">01 — About</p>
-    <h2 class="section-title reveal reveal-delay-1">Designing with presence.</h2>
+    <p class="section-label reveal" data-i18n="sec_about_label">01 — About</p>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_about_title">Designing with presence.</h2>
 
     <div class="about-container">
       <div class="about-text reveal reveal-delay-2">
-        <p>I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
-        <p>I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
-        <p>Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
+        <p data-i18n="about_p1">I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
+        <p data-i18n="about_p2">I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
+        <p data-i18n="about_p3">Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
         
         <div class="portfolio-cta-wrapper">
           <a class="portfolio-cta preview-trigger" href="https://www.artofstorms.in" target="_blank" id="magnetic-btn" data-images="site1.jpeg">
-            <span class="portfolio-cta-text">Recent Work <span style="font-family: sans-serif; font-size: 1.2em;">→</span></span>
+            <span class="portfolio-cta-text"><span data-i18n="btn_recent">Recent Work</span> <span style="font-family: sans-serif; font-size: 1.2em;">→</span></span>
           </a>
         </div>
       </div>
@@ -398,19 +404,19 @@
         <div class="glass-card tilt">
           <div class="glass-content">
             <div class="stat-num">12+</div>
-            <div class="stat-label">Years of Experience</div>
+            <div class="stat-label" data-i18n="stat_yrs">Years of Experience</div>
           </div>
         </div>
         <div class="glass-card tilt">
           <div class="glass-content">
             <div class="stat-num">20+</div>
-            <div class="stat-label">Brand Clients</div>
+            <div class="stat-label" data-i18n="stat_clients">Brand Clients</div>
           </div>
         </div>
         <div class="glass-card tilt">
           <div class="glass-content">
             <div class="stat-num">∞</div>
-            <div class="stat-label">Pixels Pushed</div>
+            <div class="stat-label" data-i18n="stat_pixels">Pixels Pushed</div>
           </div>
         </div>
       </div>
@@ -418,30 +424,30 @@
   </section>
 
   <section id="experience">
-    <p class="section-label reveal">02 — Experience</p>
-    <h2 class="section-title reveal reveal-delay-1">The Journey.</h2>
+    <p class="section-label reveal" data-i18n="sec_exp_label">02 — Experience</p>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_exp_title">The Journey.</h2>
 
     <div class="exp-grid">
       <div class="glass-card tilt exp-item reveal">
         <div class="glass-content">
-          <div class="exp-period"><span>Current</span><br>Dec 2021 — Present</div>
+          <div class="exp-period"><span data-i18n="exp_current">Current</span><br>Dec 2021 — Present</div>
           <div class="exp-company">KPMG Global Services</div>
-          <div class="exp-title">Marketing Communications Specialist</div>
-          <p class="exp-desc letter-anim">Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.</p>
+          <div class="exp-title" data-i18n="job_kpmg">Marketing Communications Specialist</div>
+          <p class="exp-desc letter-anim" data-i18n="desc_kpmg">Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.</p>
           <div class="exp-tags">
-            <span class="tag">Presentations</span><span class="tag">Motion Graphics</span><span class="tag">Event Collaterals</span>
+            <span class="tag" data-i18n="tag_pres">Presentations</span><span class="tag" data-i18n="tag_motion">Motion Graphics</span><span class="tag" data-i18n="tag_event">Event Collaterals</span>
           </div>
         </div>
       </div>
 
       <div class="glass-card tilt exp-item reveal reveal-delay-1">
         <div class="glass-content">
-          <div class="exp-period"><span>Previous</span><br>May 2019 — Dec 2021</div>
+          <div class="exp-period"><span data-i18n="exp_prev">Previous</span><br>May 2019 — Dec 2021</div>
           <div class="exp-company">Eurofins IT Solutions</div>
-          <div class="exp-title">Senior Graphic Designer</div>
-          <p class="exp-desc letter-anim">Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.</p>
+          <div class="exp-title" data-i18n="job_euro">Senior Graphic Designer</div>
+          <p class="exp-desc letter-anim" data-i18n="desc_euro">Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.</p>
           <div class="exp-tags">
-            <span class="tag">Brand Design</span><span class="tag">Emailers</span><span class="tag">HR Comms</span>
+            <span class="tag" data-i18n="tag_brand">Brand Design</span><span class="tag" data-i18n="tag_email">Emailers</span><span class="tag" data-i18n="tag_hr">HR Comms</span>
           </div>
         </div>
       </div>
@@ -449,11 +455,11 @@
       <div class="glass-card tilt exp-item reveal">
         <div class="glass-content">
           <div class="exp-period">Sept 2016 — April 2019</div>
-          <div class="exp-company">Graphic Era University</div>
-          <div class="exp-title">Graphic Designer</div>
-          <p class="exp-desc letter-anim">Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.</p>
+          <div class="exp-company" data-i18n="comp_geu">Graphic Era University</div>
+          <div class="exp-title" data-i18n="job_geu">Graphic Designer</div>
+          <p class="exp-desc letter-anim" data-i18n="desc_geu">Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.</p>
           <div class="exp-tags">
-            <span class="tag">Social Media</span><span class="tag">Web Design</span><span class="tag">Google Ads</span>
+            <span class="tag" data-i18n="tag_social">Social Media</span><span class="tag" data-i18n="tag_web">Web Design</span><span class="tag" data-i18n="tag_google">Google Ads</span>
           </div>
         </div>
       </div>
@@ -461,68 +467,68 @@
       <div class="glass-card tilt exp-item reveal reveal-delay-1">
         <div class="glass-content">
           <div class="exp-period">Aug 2014 — Sept 2016</div>
-          <div class="exp-company">Perfect Relations Pvt. Ltd.</div>
-          <div class="exp-title">Executive Creatives</div>
-          <p class="exp-desc letter-anim">Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.</p>
+          <div class="exp-company" data-i18n="comp_pr">Perfect Relations Pvt. Ltd.</div>
+          <div class="exp-title" data-i18n="job_pr">Executive Creatives</div>
+          <p class="exp-desc letter-anim" data-i18n="desc_pr">Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.</p>
           <div class="exp-tags">
-            <span class="tag">PR Agency</span><span class="tag">Product Ads</span><span class="tag">App UI</span>
+            <span class="tag" data-i18n="tag_agency">PR Agency</span><span class="tag" data-i18n="tag_product">Product Ads</span><span class="tag" data-i18n="tag_app">App UI</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="exp-disclaimer reveal reveal-delay-2">
-      <p><em>* Due to privacy and confidentiality agreements, extensive corporate project files are restricted from public display. Comprehensive portfolios and specific case studies are available upon request via email.</em></p>
+      <p data-i18n="disclaimer"><em>* Due to privacy and confidentiality agreements, extensive corporate project files are restricted from public display. Comprehensive portfolios and specific case studies are available upon request via email.</em></p>
     </div>
   </section>
 
   <section id="skills">
-    <p class="section-label reveal">03 — Skills</p>
-    <h2 class="section-title reveal reveal-delay-1">Creative Toolkit.</h2>
+    <p class="section-label reveal" data-i18n="sec_skills_label">03 — Skills</p>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_skills_title">Creative Toolkit.</h2>
 
     <div class="skills-grid">
       <div class="glass-card tilt reveal">
         <div class="glass-content">
-          <div class="skill-name">Design & Visual Arts</div>
-          <div class="skill-desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
+          <div class="skill-name" data-i18n="skill_1_name">Design & Visual Arts</div>
+          <div class="skill-desc" data-i18n="skill_1_desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
-          <div class="skill-name">Motion & Video</div>
-          <div class="skill-desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
+          <div class="skill-name" data-i18n="skill_2_name">Motion & Video</div>
+          <div class="skill-desc" data-i18n="skill_2_desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
-          <div class="skill-name">AI-Assisted Design</div>
-          <div class="skill-desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
+          <div class="skill-name" data-i18n="skill_3_name">AI-Assisted Design</div>
+          <div class="skill-desc" data-i18n="skill_3_desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
         </div>
       </div>
       
       <div class="glass-card tilt reveal">
         <div class="glass-content">
-          <div class="skill-name">Project Management</div>
-          <div class="skill-desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
+          <div class="skill-name" data-i18n="skill_4_name">Project Management</div>
+          <div class="skill-desc" data-i18n="skill_4_desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
         </div>
       </div>
       
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
-          <div class="skill-name">Event Collaterals</div>
-          <div class="skill-desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
+          <div class="skill-name" data-i18n="skill_5_name">Event Collaterals</div>
+          <div class="skill-desc" data-i18n="skill_5_desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
-          <div class="skill-name">Vibe Coding</div>
-          <div class="skill-desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
+          <div class="skill-name" data-i18n="skill_6_name">Vibe Coding</div>
+          <div class="skill-desc" data-i18n="skill_6_desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
         </div>
       </div>
     </div>
 
     <div class="software-section reveal">
-      <p class="section-label">Software Ecosystem</p>
+      <p class="section-label" data-i18n="software_label">Software Ecosystem</p>
       <div class="software-list">
         <span class="software-item">Adobe Creative Suite</span>
         <span class="software-item">Luminar</span>
@@ -532,18 +538,18 @@
         <span class="software-item">Logic Pro</span>
         <span class="software-item">Ableton Live</span>
         <span class="software-item">Claude + Gemini</span>
-        <span class="software-item">and more...</span>
+        <span class="software-item" data-i18n="and_more">and more...</span>
       </div>
     </div>
   </section>
 
   <section id="interests">
-    <p class="section-label reveal">04 — Interests</p>
-    <h2 class="section-title reveal reveal-delay-1">Beyond the <span class="script-flare">Screen</span></h2>
+    <p class="section-label reveal" data-i18n="sec_int_label">04 — Interests</p>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_int_title">Beyond the <span class="script-flare">Screen</span></h2>
 
     <div class="glass-card tilt reveal reveal-delay-2">
       <div class="glass-content">
-        <p style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;">
+        <p style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;" data-i18n="int_desc">
           When I step away from design, I play the piano and compose ambient music soundscapes. I also delve into visual art photography, capturing minimalist landscapes to continually refine my sense of composition and storytelling.
         </p>
       </div>
@@ -559,18 +565,18 @@
       <a class="portfolio-cta preview-trigger" href="https://artofstorms.in/photos" target="_blank" data-images="Photo1.jpeg, Photo2.jpeg, Photo3.jpeg, Photo4.jpeg, Photo5.jpeg, Photo6.jpeg, Photo7.jpeg">
         <span class="portfolio-cta-text">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-          Photography
+          <span data-i18n="btn_photo">Photography</span>
         </span>
       </a>
     </div>
 
     <div class="languages-strip reveal">
-      <span class="lang-title">Languages</span>
-      <span class="lang-item">English (Bilingual)</span>
+      <span class="lang-title" data-i18n="lang_title">Languages</span>
+      <span class="lang-item" data-i18n="lang_en">English (Bilingual)</span>
       <span style="color:var(--c-muted);">·</span>
-      <span class="lang-item">Hindi (Bilingual)</span>
+      <span class="lang-item" data-i18n="lang_hi">Hindi (Bilingual)</span>
       <span style="color:var(--c-muted);">·</span>
-      <span class="lang-item">Japanese (N5/N4)</span>
+      <span class="lang-item" data-i18n="lang_jp">Japanese (N5/N4)</span>
     </div>
   </section>
 
@@ -619,7 +625,7 @@
   </footer>
   <div class="footer-bottom">
     <span>© 2026 Aditya Sharma</span>
-    <span>Gandhinagar, India</span>
+    <span data-i18n="location">Gandhinagar, India</span>
   </div>
 
 </div> 
@@ -629,15 +635,13 @@
 
   // 1. Initialize Lenis Smooth Scroll
   const lenis = new Lenis({
-    duration: 0.8, 
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    duration: 0.8, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     direction: 'vertical', gestureDirection: 'vertical', smooth: true,
   });
 
   function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
   requestAnimationFrame(raf);
 
-  // Smooth Scroll Interceptor
   document.querySelectorAll('.scroll-link').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       e.preventDefault();
@@ -646,14 +650,129 @@
     });
   });
 
-  // Global Scroll Parallax & Progress Bar
   lenis.on('scroll', (e) => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
     document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
-    
-    // Background mesh parallax
     const bgMesh = document.getElementById("bgMeshContainer");
     if (bgMesh) { bgMesh.style.transform = `translateY(${e.scroll * 0.15}px)`; }
+  });
+
+  // ── I18N REAL-TIME TRANSLATION DICTIONARY ──
+  const translations = {
+    nav_about: { en: "About", jp: "概要" },
+    nav_exp: { en: "Experience", jp: "経歴" },
+    nav_skills: { en: "Skills", jp: "スキル" },
+    nav_cv: { en: "PDF CV", jp: "履歴書 (PDF)" },
+    hero_tag: { en: "Visual Artist & Graphic Designer", jp: "ビジュアルアーティスト & グラフィックデザイナー" },
+    hero_role: { en: 'Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.', jp: 'プリントからモーション、コンセプトから実行まで、視覚的アイデンティティとブランド体験を創り出します。' },
+    sec_about_label: { en: "01 — About", jp: "01 — 概要" },
+    sec_about_title: { en: "Designing with presence.", jp: "存在感のあるデザイン。" },
+    about_p1: { en: "I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.", jp: "インドのガンディーナガルを拠点とする<strong>シニアデザイナー兼ビジュアルアーティスト</strong>です。10年以上の経験を持ち、ブランド形成や社内コミュニケーション、クリエイティブなストーリーテリングを専門としています。" },
+    about_p2: { en: "I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.", jp: "<strong>戦略的コミュニケーションと視覚的クラフト</strong>の交差領域で活動し、複雑なアイデアを明確で魅力的なデザインに変換します。経営幹部向けのプレゼン、ダイナミックなモーション、包括的なブランドガイドラインまで幅広く対応します。" },
+    about_p3: { en: "Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.", jp: "企業案件以外では、アンビエント音楽の作曲やミニマリスト写真の撮影などを行っており、常に自身のデザインの可能性を追求しています。" },
+    btn_recent: { en: "Recent Work", jp: "最近の作品" },
+    stat_yrs: { en: "Years of Experience", jp: "年の経験" },
+    stat_clients: { en: "Brand Clients", jp: "ブランド顧客" },
+    stat_pixels: { en: "Pixels Pushed", jp: "ピクセル" },
+    sec_exp_label: { en: "02 — Experience", jp: "02 — 経歴" },
+    sec_exp_title: { en: "The Journey.", jp: "軌跡。" },
+    exp_current: { en: "Current", jp: "現在" },
+    exp_prev: { en: "Previous", jp: "以前" },
+    job_kpmg: { en: "Marketing Communications Specialist", jp: "マーケティング・コミュニケーション・スペシャリスト" },
+    desc_kpmg: { en: "Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.", jp: "エンタープライズ規模のオペレーションにおける視覚的コミュニケーションを主導。社内コミュニケーションデザイン、エグゼクティブ向けプレゼン資料、モーショングラフィックス、イベント資料などを担当。" },
+    tag_pres: { en: "Presentations", jp: "プレゼン" }, tag_motion: { en: "Motion Graphics", jp: "モーショングラフィックス" }, tag_event: { en: "Event Collaterals", jp: "イベント資料" },
+    job_euro: { en: "Senior Graphic Designer", jp: "シニアグラフィックデザイナー" },
+    desc_euro: { en: "Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.", jp: "現代のコミュニケーション基準に従って組織のブランドデザイン言語を刷新し、イベント、社内コミュニケーション、HRキャンペーンのクリエイティブ出力を主導。" },
+    tag_brand: { en: "Brand Design", jp: "ブランドデザイン" }, tag_email: { en: "Emailers", jp: "メール配信" }, tag_hr: { en: "HR Comms", jp: "人事広報" },
+    comp_geu: { en: "Graphic Era University", jp: "グラフィック・エラ大学" },
+    job_geu: { en: "Graphic Designer", jp: "グラフィックデザイナー" },
+    desc_geu: { en: "Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.", jp: "AdobeデジタルマーケティングサービスやGoogleディスプレイキャンペーンと連携し、デジタルデザイン、印刷媒体、ウェブサイトのビジュアルを管理。" },
+    tag_social: { en: "Social Media", jp: "SNS" }, tag_web: { en: "Web Design", jp: "ウェブデザイン" }, tag_google: { en: "Google Ads", jp: "Google広告" },
+    comp_pr: { en: "Perfect Relations Pvt. Ltd.", jp: "パーフェクト・リレーションズ" },
+    job_pr: { en: "Executive Creatives", jp: "エグゼクティブ・クリエイティブ" },
+    desc_pr: { en: "Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.", jp: "デジタルチームに所属。SNS投稿のデザイン、製品広告の作成、モバイルアプリやウェブサイトのUIレイアウトを設計。タイトな期限の中でチームを管理。" },
+    tag_agency: { en: "PR Agency", jp: "PRエージェンシー" }, tag_product: { en: "Product Ads", jp: "製品広告" }, tag_app: { en: "App UI", jp: "アプリUI" },
+    disclaimer: { en: "<em>* Due to privacy and confidentiality agreements, extensive corporate project files are restricted from public display. Comprehensive portfolios and specific case studies are available upon request via email.</em>", jp: "<em>* プライバシーおよび機密保持契約のため、大規模な企業プロジェクトのファイルは公開を制限しています。詳細なポートフォリオや特定のケーススタディについては、メールにてご請求ください。</em>" },
+    sec_skills_label: { en: "03 — Skills", jp: "03 — スキル" },
+    sec_skills_title: { en: "Creative Toolkit.", jp: "クリエイティブツール。" },
+    skill_1_name: { en: "Design & Visual Arts", jp: "デザイン＆ビジュアルアート" },
+    skill_1_desc: { en: "Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.", jp: "Photoshop、Illustrator、InDesign。バナー、SNS、印刷物など、視覚的なものすべてが専門領域です。" },
+    skill_2_name: { en: "Motion & Video", jp: "モーション＆ビデオ" },
+    skill_2_desc: { en: "After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.", jp: "After Effects、Premiere Pro。モーショングラフィックス、ショートビデオ、VFX。" },
+    skill_3_name: { en: "AI-Assisted Design", jp: "AIデザイン" },
+    skill_3_desc: { en: "Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.", jp: "MidjourneyやStable Diffusionを利用したアイデア出し。クリエイティブを加速させるプロンプトエンジニアリング。" },
+    skill_4_name: { en: "Project Management", jp: "プロジェクト管理" },
+    skill_4_desc: { en: "Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.", jp: "動きの速い企業環境におけるクリエイティブワークフロー、チーム間の調整、納品スケジュールの管理。" },
+    skill_5_name: { en: "Event Collaterals", jp: "イベント資料" },
+    skill_5_desc: { en: "End-to-end design from signage and stage branding to digital assets and post-event communications.", jp: "サインやステージのブランディングから、デジタルアセットやイベント後のコミュニケーションまで、エンドツーエンドのデザイン。" },
+    skill_6_name: { en: "Vibe Coding", jp: "バイブコーディング" },
+    skill_6_desc: { en: "Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.", jp: "思考を画面上で実現するための、AI支援によるフロントエンド構築のプロトタイピングとディレクション。" },
+    software_label: { en: "Software Ecosystem", jp: "ソフトウェア・エコシステム" },
+    and_more: { en: "and more...", jp: "その他..." },
+    sec_int_label: { en: "04 — Interests", jp: "04 — 興味" },
+    sec_int_title: { en: 'Beyond the <span class="script-flare">Screen</span>', jp: '画面の<span class="script-flare">向こう側</span>' },
+    int_desc: { en: "When I step away from design, I play the piano and compose ambient music soundscapes. I also delve into visual art photography, capturing minimalist landscapes to continually refine my sense of composition and storytelling.", jp: "デザインから離れるときは、ピアノを弾いたりアンビエント音楽を作曲したりしています。また、ミニマリストの風景を捉えるビジュアルアート写真にも没頭し、構図とストーリーテリングの感覚を常に磨いています。" },
+    btn_photo: { en: "Photography", jp: "写真" },
+    lang_title: { en: "Languages", jp: "言語" },
+    lang_en: { en: "English (Bilingual)", jp: "英語（バイリンガル）" },
+    lang_hi: { en: "Hindi (Bilingual)", jp: "ヒンディー語（バイリンガル）" },
+    lang_jp: { en: "Japanese (N5/N4)", jp: "日本語（N5/N4）" },
+    location: { en: "Gandhinagar, India", jp: "インド、ガンディーナガル" }
+  };
+
+  let currentLang = 'en';
+  
+  // Custom Function to Flawlessly Render and Wrap Words
+  function applyLetterAnim(el, textContent) {
+    el.innerHTML = '';
+    const words = textContent.split(' ');
+    let charIndex = 0;
+    
+    words.forEach((word, wIdx) => {
+      const wordSpan = document.createElement('span');
+      wordSpan.style.display = 'inline-block'; 
+      wordSpan.style.whiteSpace = 'nowrap';
+      
+      word.split('').forEach((char) => {
+        const charSpan = document.createElement('span');
+        charSpan.textContent = char; charSpan.style.opacity = '0'; charSpan.style.display = 'inline-block'; charSpan.style.transform = 'translateY(5px)';
+        charSpan.style.transition = `opacity 0.05s ease ${charIndex * 0.005}s, transform 0.05s ease ${charIndex * 0.005}s`;
+        wordSpan.appendChild(charSpan);
+        charIndex++;
+      });
+      
+      el.appendChild(wordSpan);
+      if(wIdx < words.length - 1) { const spaceSpan = document.createElement('span'); spaceSpan.innerHTML = '&nbsp;'; el.appendChild(spaceSpan); }
+    });
+
+    if(el.classList.contains('visible')) {
+      el.querySelectorAll('span > span').forEach(s => { s.style.opacity = '1'; s.style.transform = 'translateY(0)'; });
+    }
+  }
+
+  // Initial Load of Animations
+  document.querySelectorAll('.letter-anim').forEach(el => applyLetterAnim(el, el.textContent));
+
+  // Language Toggle Logic
+  document.getElementById('langToggle').addEventListener('click', function() {
+    currentLang = currentLang === 'en' ? 'jp' : 'en';
+    this.innerText = currentLang === 'en' ? 'EN / JP' : 'JP / EN';
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (translations[key]) {
+        if (el.classList.contains('letter-anim')) {
+          applyLetterAnim(el, translations[key][currentLang]);
+        } else {
+          el.innerHTML = translations[key][currentLang];
+        }
+      }
+    });
+
+    // Reset Katakana Glitch Names to reflect current language instantly
+    document.querySelectorAll('.glitch-word').forEach(wordEl => {
+      wordEl.dispatchEvent(new Event('mouseleave'));
+    });
   });
 
   // ── DESKTOP ONLY LOGIC ──
@@ -678,19 +797,16 @@
     let currentPreviewX = mouseX, currentPreviewY = mouseY;
 
     function animateDesktopPhysics() {
-      trailX += (mouseX - trailX) * 0.2;
-      trailY += (mouseY - trailY) * 0.2;
+      trailX += (mouseX - trailX) * 0.2; trailY += (mouseY - trailY) * 0.2;
       trail.style.transform = `translate3d(${trailX - 20}px, ${trailY - 20}px, 0)`;
 
-      currentPreviewX += (targetPreviewX - currentPreviewX) * 0.12;
-      currentPreviewY += (targetPreviewY - currentPreviewY) * 0.12;
+      currentPreviewX += (targetPreviewX - currentPreviewX) * 0.12; currentPreviewY += (targetPreviewY - currentPreviewY) * 0.12;
       workPreview.style.transform = `translate3d(${currentPreviewX}px, ${currentPreviewY}px, 0)`;
-
       requestAnimationFrame(animateDesktopPhysics);
     }
     animateDesktopPhysics();
 
-    document.querySelectorAll('a, .glass-card, .software-item').forEach(el => {
+    document.querySelectorAll('a, button, .glass-card, .software-item').forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursor.style.width = '40px'; cursor.style.height = '40px';
         cursor.style.background = 'var(--grad-primary)'; cursor.style.mixBlendMode = 'normal'; cursor.style.border = 'none';
@@ -720,7 +836,6 @@
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left; const y = e.clientY - rect.top;
         card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`);
-        
         if(card.classList.contains('tilt')) {
           const multiplier = 10; 
           const xRotate = multiplier * ((y - rect.height / 2) / rect.height);
@@ -751,6 +866,7 @@
       btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
     });
 
+    // Smart Katakana Glitch for Desktop (Respects Language Toggle)
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       const origWord = wordEl.getAttribute('data-word');
@@ -759,48 +875,45 @@
       const englishChars = origWord.split('');
       let timeouts = [];
 
-      const doGlitch = (toEnglish) => {
+      const doGlitch = (isHovering) => {
         timeouts.forEach(t => clearTimeout(t)); timeouts = [];
-        const targetScript = toEnglish ? englishChars : katakanaChars;
+        
+        // If English and not hovering OR if JP and hovering -> Show English
+        const showEnglish = (currentLang === 'en' && !isHovering) || (currentLang === 'jp' && isHovering);
+        const targetScript = showEnglish ? englishChars : katakanaChars;
+
         spans.forEach((span, i) => {
           const t = setTimeout(() => {
             if (targetScript[i] === '') { span.style.display = 'none'; } 
             else { span.style.display = 'inline-block'; span.textContent = targetScript[i]; }
-            if (toEnglish) span.classList.remove('block-font'); else span.classList.add('block-font');
+            if (showEnglish) span.classList.remove('block-font'); else span.classList.add('block-font');
           }, Math.random() * 350);
           timeouts.push(t);
         });
       };
-      wordEl.addEventListener('mouseenter', () => doGlitch(false));
-      wordEl.addEventListener('mouseleave', () => doGlitch(true));
+
+      wordEl.addEventListener('mouseenter', () => doGlitch(true));
+      wordEl.addEventListener('mouseleave', () => doGlitch(false));
     });
   } 
 
   // ── MOBILE ONLY LOGIC ──
   else {
-    // Dynamic Scroll Lighting for Mobile Cards
     const mobileCards = document.querySelectorAll('.glass-card, .portfolio-cta');
     lenis.on('scroll', () => {
       const vh = window.innerHeight;
       mobileCards.forEach(card => {
         const rect = card.getBoundingClientRect();
-        // Check if card is within the viewport
         if (rect.top < vh && rect.bottom > 0) {
-          // Progress goes from 0 (entering from bottom) to 1 (leaving top)
           const percent = (vh - rect.top) / (vh + rect.height);
-          
-          // Move the lighting gradient from top to bottom as user scrolls
           const y = percent * rect.height;
-          // Organic drift left and right
           const x = (0.5 + Math.sin(percent * Math.PI) * 0.3) * rect.width;
-          
           card.style.setProperty('--mouse-x', `${x}px`);
           card.style.setProperty('--mouse-y', `${y}px`);
         }
       });
     });
 
-    // Mobile Scroll-triggered Katakana Glitch
     const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
     const mobileGlitchObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -819,6 +932,7 @@
           });
 
           setTimeout(() => {
+            if(currentLang === 'jp') return; // Don't revert if they toggled JP
             spans.forEach((span, i) => {
               setTimeout(() => {
                 span.style.display = 'inline-block'; span.textContent = englishChars[i]; span.classList.remove('block-font');
@@ -834,36 +948,13 @@
     document.querySelectorAll('.glitch-word').forEach(el => mobileGlitchObserver.observe(el));
   }
 
-  // ── GLOBAL ANIMATIONS ──
-  document.querySelectorAll('.letter-anim').forEach(el => {
-    const text = el.textContent; el.textContent = ''; 
-    const words = text.split(' ');
-    let charIndex = 0;
-    
-    words.forEach((word, wIdx) => {
-      const wordSpan = document.createElement('span');
-      wordSpan.style.display = 'inline-block'; 
-      wordSpan.style.whiteSpace = 'nowrap';
-      
-      word.split('').forEach((char) => {
-        const charSpan = document.createElement('span');
-        charSpan.textContent = char; charSpan.style.opacity = '0'; charSpan.style.display = 'inline-block'; charSpan.style.transform = 'translateY(5px)';
-        charSpan.style.transition = `opacity 0.05s ease ${charIndex * 0.005}s, transform 0.05s ease ${charIndex * 0.005}s`;
-        wordSpan.appendChild(charSpan);
-        charIndex++;
-      });
-      
-      el.appendChild(wordSpan);
-      if(wIdx < words.length - 1) { const spaceSpan = document.createElement('span'); spaceSpan.innerHTML = '&nbsp;'; el.appendChild(spaceSpan); }
-    });
-  });
-
+  // ── GLOBAL OBSERVERS ──
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { 
         e.target.classList.add('visible'); 
         if (e.target.classList.contains('letter-anim')) {
-          e.target.querySelectorAll('span').forEach(span => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; });
+          e.target.querySelectorAll('span > span').forEach(span => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; });
         }
         io.unobserve(e.target); 
       }
