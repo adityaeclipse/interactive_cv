@@ -656,11 +656,20 @@ When I step away from design, I play the piano and compose ambient music soundsc
 
   lenis.on('scroll', (e) => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    document.getElementById("progressBar").style.width = ((e.scroll / scrollHeight) * 100) + "%";
+    const progress = e.scroll / scrollHeight; // Gets a value between 0 and 1
+    
+    // 1. Update progress bar
+    document.getElementById("progressBar").style.width = (progress * 100) + "%";
+    
+    // 2. Safe Parallax 
     const bgMesh = document.getElementById("bgMeshContainer");
-    if (bgMesh) { bgMesh.style.transform = `translateY(${e.scroll * 0.15}px)`; }
+    if (bgMesh) { 
+      // Your CSS inset gives a 20vh buffer. We limit max travel to 15vh.
+      // Changing to negative makes it move upward, which is visually correct for parallax depth.
+      bgMesh.style.transform = `translateY(${progress * -15}vh)`; 
+    }
   });
-
+ 
   // ── I18N REAL-TIME TRANSLATION DICTIONARY ──
   const translations = {
     nav_about: { en: "About", jp: "概要" },
