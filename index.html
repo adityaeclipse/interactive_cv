@@ -55,7 +55,7 @@
   body::after {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9995;
     background: radial-gradient(600px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), var(--spotlight-color), transparent 40%);
-    will-change: background; transition: background 0.6s ease;
+    will-change: background; transition: background 0.5s ease;
   }
 
   p, .skill-desc, .exp-desc {
@@ -239,7 +239,7 @@
   .role-word.active { opacity: 1; transform: translateY(0); }
   .role-word.exit { opacity: 0; transform: translateY(-100%); }
 
-  /* Spacing for the static trailing text */
+  /* Extra space for the static trailing text */
   .static-role { margin-left: 0.8em; }
 
   .contact-block { text-align: right; opacity: 0; transform: translateY(30px); margin-top: 0; }
@@ -280,7 +280,7 @@
   
   /* The bullet (Center aligned to the role text baseline) */
   .exp-item::before { 
-    content: ''; position: absolute; left: calc(-2.5rem - 5px); top: 12px; 
+    content: ''; position: absolute; left: calc(-2.5rem - 6px); top: 12px; 
     width: 12px; height: 12px; border-radius: 50%; background: var(--c-paper); 
     border: 2px solid var(--c-muted); z-index: 6; transition: border-color 0.4s, background 0.4s, transform 0.4s; 
   }
@@ -303,6 +303,11 @@
   .info-block h3 { border-left: 2px solid var(--c-violet); padding-left: 1rem; margin-bottom: 1.5rem; }
   .lang-list { display: flex; flex-direction: column; gap: 0.8rem; }
   .lang-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--c-border); padding-bottom: 0.4rem; transition: border-color 0.6s ease; }
+
+  /* ── BOTTOM ACTIONS ── */
+  .bottom-actions { display: flex; gap: 1.5rem; margin-top: 5rem; justify-content: center; }
+  .action-btn { flex: 1; justify-content: center; padding: 1.2rem; font-size: 0.85rem; display: flex; align-items: center; text-align: center; }
+  .action-btn svg { flex-shrink: 0; margin-right: 8px; }
 
   /* ── MARQUEE TICKER ── */
   .marquee-wrap {
@@ -327,13 +332,23 @@
   @media (hover: none) and (pointer: coarse), (max-width: 900px) {
     body, .glitch-word, .nav-btn, .edu-card { cursor: auto !important; }
     .cursor, .cursor-trail, .work-preview { display: none !important; }
+    
     .glass-nav { position: relative; top: 0; width: 100%; max-width: 100%; border-radius: 0; flex-direction: column; gap: 1rem; padding: 1rem; background: var(--c-bg); border-bottom: 1px solid var(--c-border); }
     .nav-group { justify-content: center; width: 100%; margin: 0 !important; }
+    
     .cv-wrapper { margin: 0; max-width: 100%; transform: none !important; perspective: none; }
-    .cv-document { padding: 4rem 1.5rem; border: none; box-shadow: none; border-radius: 0; }
+    .cv-document { padding: 3rem 1.2rem; border: none; box-shadow: none; border-radius: 0; }
+    
     .header-grid, .skills-wrapper, .edu-grid, .profile-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .name { font-size: clamp(2.8rem, 12vw, 4rem); }
     .contact-block { text-align: left; margin-top: 0; }
     .exp-header { flex-direction: column; gap: 0.5rem; }
+    
+    .timeline { padding-left: 1.5rem; }
+    .exp-item::before { left: calc(-1.5rem - 6px); }
+
+    .bottom-actions { flex-direction: column; gap: 1rem; margin-top: 4rem; }
+    .action-btn { width: 100%; flex: none; padding: 1rem; }
   }
 </style>
 </head>
@@ -566,18 +581,18 @@
       </div>
 
       <!-- BALANCED BOTTOM NAVIGATION ROW -->
-      <div style="display: flex; gap: 1.5rem; margin-top: 5rem; flex-wrap: wrap; justify-content: center;" class="reveal">
-        <a class="nav-btn magnetic-el preview-trigger" href="https://aditya.bandcamp.com" target="_blank" data-images="bc1.jpg, bc2.jpg, bc3.jpg, bc4.jpg" style="flex: 1; justify-content: center; padding: 1.2rem; font-size: 0.8rem;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+      <div class="bottom-actions reveal">
+        <a class="nav-btn magnetic-el preview-trigger action-btn" href="https://aditya.bandcamp.com" target="_blank" data-images="bc1.jpg, bc2.jpg, bc3.jpg, bc4.jpg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
           Bandcamp
         </a>
         
-        <a class="nav-btn magnetic-el preview-trigger" href="https://artofstorms.in/photos" target="_blank" data-images="Photo1.jpeg, Photo2.jpeg, Photo3.jpeg, Photo4.jpeg, Photo5.jpeg, Photo6.jpeg, Photo7.jpeg" style="flex: 1; justify-content: center; padding: 1.2rem; font-size: 0.8rem;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <a class="nav-btn magnetic-el preview-trigger action-btn" href="https://artofstorms.in/photos" target="_blank" data-images="Photo1.jpeg, Photo2.jpeg, Photo3.jpeg, Photo4.jpeg, Photo5.jpeg, Photo6.jpeg, Photo7.jpeg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
           <span data-i18n="btn_photo">Photography</span>
         </a>
 
-        <a class="nav-btn primary magnetic-el" href="Aditya_Sharma_CV.pdf" download style="flex: 1; justify-content: center; padding: 1.2rem; font-size: 0.8rem;" data-i18n="nav_cv">
+        <a class="nav-btn primary magnetic-el action-btn" href="Aditya_Sharma_CV.pdf" download data-i18n="nav_cv">
           ↓ PDF CV
         </a>
       </div>
