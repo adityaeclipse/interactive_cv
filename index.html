@@ -48,14 +48,14 @@
     background-color: var(--c-bg); color: var(--c-text);
     font-family: 'Manrope', sans-serif; font-weight: 300; line-height: 1.6;
     overflow-x: hidden; cursor: none;
-    transition: background-color 0.5s ease, color 0.5s ease;
+    transition: background-color 0.6s ease, color 0.6s ease;
   }
 
   /* ── GLOBAL SPOTLIGHT EFFECT ── */
   body::after {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9995;
     background: radial-gradient(600px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), var(--spotlight-color), transparent 40%);
-    will-change: background; transition: background 0.5s ease;
+    will-change: background; transition: background 0.6s ease;
   }
 
   p, .skill-desc, .exp-desc {
@@ -67,7 +67,7 @@
   .preloader {
     position: fixed; inset: 0; z-index: 99999; background: var(--preloader-bg);
     display: flex; align-items: center; justify-content: center; flex-direction: column;
-    transition: opacity 0.7s cubic-bezier(0.4, 0, 0, 1), visibility 0.7s, background-color 0.5s ease;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0, 1), visibility 0.7s, background-color 0.6s ease;
   }
   .preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
   .preloader-logo {
@@ -90,7 +90,7 @@
   .void-bg::after {
     content: ''; position: absolute; inset: 0;
     background: var(--bg-overlay);
-    transition: background 0.5s ease;
+    transition: background 0.6s ease;
   }
   .bg-noise {
     position: fixed; inset: -50%; z-index: -1; pointer-events: none;
@@ -177,20 +177,20 @@
     box-shadow: var(--doc-shadow);
     padding: 6rem 5rem; position: relative; overflow: hidden;
     transform-origin: center center; will-change: transform;
-    transition: background 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
+    transition: background 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;
   }
   
   /* Internal Spotlight */
   .cv-document::before {
     content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background: radial-gradient(800px circle at var(--doc-x, 50%) var(--doc-y, 50%), var(--spotlight-color), transparent 60%);
-    opacity: var(--spot-op, 0); transition: opacity 0.4s ease, background 0.1s ease;
+    opacity: var(--spot-op, 0); transition: opacity 0.4s ease, background 0.6s ease;
   }
 
   .cv-content { position: relative; z-index: 1; }
 
   /* ── TYPOGRAPHY HIERARCHY CONSOLIDATION ── */
-  h1, h2, h3 { color: var(--c-text); font-weight: 400; transition: color 0.5s ease; }
+  h1, h2, h3 { color: var(--c-text); font-weight: 400; transition: color 0.6s ease; }
   
   /* TIER 6: Meta Text (0.75rem) */
   .jp-label, .timeline-date, .edu-type, .edu-date, .lang-level, .client-name { 
@@ -200,14 +200,14 @@
   
   /* TIER 5: Body Text (0.95rem) */
   .exp-text, .skill-desc, .edu-inst, .pursuits-text, .contact-link { 
-    font-size: 0.95rem; color: var(--c-muted); line-height: 1.6; transition: color 0.5s ease; 
+    font-size: 0.95rem; color: var(--c-muted); line-height: 1.6; transition: color 0.6s ease; 
   }
   
   /* TIER 4: Subheads (1.05rem) */
   .exp-company, .skill-name, .edu-title, .info-block h3 { 
-    font-weight: 700; font-size: 1.05rem; color: var(--c-text); margin-bottom: 0.5rem; transition: color 0.5s ease; 
+    font-weight: 700; font-size: 1.05rem; color: var(--c-text); margin-bottom: 0.5rem; transition: color 0.6s ease; 
   }
-  .lang-name { font-weight: 700; font-size: 1.05rem; color: var(--c-text); margin-bottom: 0; transition: color 0.5s ease; } /* Fixed alignment removal of margin */
+  .lang-name { font-weight: 700; font-size: 1.05rem; color: var(--c-text); transition: color 0.6s ease; }
   
   /* TIER 3: Role Titles (1.8rem) */
   .exp-role { 
@@ -216,9 +216,9 @@
   
   /* TIER 2: Section Titles (2.5rem) */
   .section-title { 
-    font-family: 'Instrument Serif', serif; font-size: 2.5rem; font-style: italic; border-bottom: 1px solid var(--c-border); padding-bottom: 1rem; margin-bottom: 3rem; opacity: 0; transform: translateY(20px); transition: border-color 0.5s ease; 
+    font-family: 'Instrument Serif', serif; font-size: 2.5rem; font-style: italic; border-bottom: 1px solid var(--c-border); padding-bottom: 1rem; margin-bottom: 3rem; opacity: 0; transform: translateY(20px); transition: border-color 0.6s ease; 
   }
-  .section-title span { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-style: normal; color: var(--c-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 1.5rem; vertical-align: middle; transition: color 0.5s ease; }
+  .section-title span { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-style: normal; color: var(--c-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 1.5rem; vertical-align: middle; transition: color 0.6s ease; }
 
   /* TIER 1: Hero Name (clamp 3rem to 5rem) */
   .name { font-family: 'Roboto Slab', serif; font-weight: 800; font-size: clamp(3rem, 6vw, 5rem); text-transform: uppercase; line-height: 0.9; margin-bottom: 1rem; letter-spacing: -0.02em; }
@@ -233,20 +233,20 @@
   .block-font { font-family: 'Manrope', sans-serif !important; font-weight: 800 !important; color: var(--c-orange); font-size: 0.85em; }
 
   /* Dynamic Roles */
-  .hero-tag { font-family: 'DM Mono', monospace; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); margin-top: 1rem; transition: color 0.5s ease; }
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); margin-top: 1rem; transition: color 0.6s ease; }
   .role-rotator { position: relative; display: inline-block; overflow: hidden; vertical-align: bottom; transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
   .role-word { position: absolute; left: 0; top: 0; opacity: 0; transform: translateY(100%); transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); white-space: nowrap; }
   .role-word.active { opacity: 1; transform: translateY(0); }
   .role-word.exit { opacity: 0; transform: translateY(-100%); }
 
-  /* Extra space for the static trailing text */
+  /* Spacing for the static trailing text */
   .static-role { margin-left: 0.8em; }
 
   .contact-block { text-align: right; opacity: 0; transform: translateY(30px); margin-top: 0; }
   .contact-link { display: block; margin-bottom: 0.5rem; text-decoration: none; }
   .contact-link:hover { color: var(--c-text); }
 
-  .summary-text { font-size: 1.25rem; line-height: 1.6; color: var(--c-text); margin-bottom: 6rem; width: 100%; opacity: 0; transform: translateY(20px); transition: color 0.5s ease; }
+  .summary-text { font-size: 1.25rem; line-height: 1.6; color: var(--c-text); margin-bottom: 6rem; width: 100%; opacity: 0; transform: translateY(20px); transition: color 0.6s ease; }
 
   /* ── SKILLS GRID (保有スキル) ── */
   .skills-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 6rem; }
@@ -271,7 +271,7 @@
   .timeline { position: relative; margin-bottom: 6rem; padding-left: 2.5rem; }
   
   /* The vertical base line (Z-index strictly behind items) */
-  .timeline-line { position: absolute; left: 0; top: 12px; width: 2px; background: var(--c-border); z-index: 0; transition: background 0.5s ease; }
+  .timeline-line { position: absolute; left: 0; top: 12px; width: 2px; background: var(--c-border); z-index: 0; transition: background 0.6s ease; }
   .timeline-progress { position: absolute; left: 0; top: 12px; width: 2px; height: 0px; background: var(--grad-primary); z-index: 1; transition: height 0.2s ease-out; }
   
   /* Experience items placed strictly ABOVE the line */
@@ -291,7 +291,7 @@
 
   /* ── EDUCATION GRID (学歴) ── */
   .edu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 6rem; }
-  .edu-card { background: var(--card-hover-bg); border: 1px solid var(--c-border); padding: 2rem; border-radius: 12px; transition: transform 0.4s, border-color 0.4s, background 0.5s ease; opacity: 0; transform: translateY(20px); position: relative; overflow: hidden; cursor: crosshair; }
+  .edu-card { background: var(--card-hover-bg); border: 1px solid var(--c-border); padding: 2rem; border-radius: 12px; transition: transform 0.4s, border-color 0.4s, background 0.6s ease; opacity: 0; transform: translateY(20px); position: relative; overflow: hidden; cursor: crosshair; }
   .edu-card::before { content: ''; position: absolute; top: var(--y, 50%); left: var(--x, 50%); width: 250px; height: 250px; background: radial-gradient(circle, rgba(160, 51, 255, 0.1) 0%, transparent 70%); transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
   .edu-card:hover { border-color: rgba(160, 51, 255, 0.4); transform: translateY(-3px); }
   .edu-card:hover::before { opacity: 1; }
@@ -302,12 +302,12 @@
   .profile-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; opacity: 0; transform: translateY(20px); }
   .info-block h3 { border-left: 2px solid var(--c-violet); padding-left: 1rem; margin-bottom: 1.5rem; }
   .lang-list { display: flex; flex-direction: column; gap: 0.8rem; }
-  .lang-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--c-border); padding-bottom: 0.4rem; transition: border-color 0.5s ease; }
+  .lang-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--c-border); padding-bottom: 0.4rem; transition: border-color 0.6s ease; }
 
   /* ── MARQUEE TICKER ── */
   .marquee-wrap {
     overflow: hidden; padding: 2rem 0 4rem; border-top: 1px solid var(--c-border);
-    background: transparent; opacity: 0.4; transition: opacity 0.4s, border-color 0.5s ease;
+    background: transparent; opacity: 0.4; transition: opacity 0.4s, border-color 0.6s ease;
   }
   .marquee-wrap:hover { opacity: 0.8; }
   .marquee-inner { display: flex; width: max-content; animation: marquee 40s linear infinite; will-change: transform; }
@@ -627,14 +627,67 @@
   const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   // ══════════════════════════════════════════
-  //  THEME TOGGLE (LIGHT/DARK)
+  //  THEME TOGGLE WITH FULL DOCUMENT 3D FLIP PHYSICS
   // ══════════════════════════════════════════
   const themeToggle = document.getElementById('themeToggle');
+  let flipAngle = 0;
+  let isFlipping = false;
+  let flipScale = 1;
+
   themeToggle.addEventListener('click', () => {
+    if (isFlipping) return;
+    isFlipping = true;
+    
     const root = document.documentElement;
     const isDark = root.getAttribute('data-theme') === 'dark';
-    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    themeToggle.textContent = isDark ? '🌙 Dark' : '☀️ Light';
+    const cvWrapper = document.getElementById('cvWrapper');
+    
+    let startTime = performance.now();
+    
+    function flipAnim(time) {
+      let elapsed = time - startTime;
+      let duration = 650; // Milliseconds for flip
+      let progress = Math.min(elapsed / duration, 1);
+      
+      // Calculate push-in scale effect during flip
+      flipScale = 1 - Math.sin(progress * Math.PI) * 0.12; 
+      
+      if (progress < 0.5) {
+        // Accelerate to 90 degrees
+        let p = progress * 2;
+        let ease = p * p * p;
+        flipAngle = ease * 90;
+      } else {
+        // At exactly edge-on (90deg), flip to -90deg and swap colors
+        if (!themeToggle.dataset.swapped) {
+          root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+          themeToggle.textContent = isDark ? '🌙 Dark' : '☀️ Light';
+          themeToggle.dataset.swapped = "true";
+        }
+        let p = (progress - 0.5) * 2;
+        let pInv = 1 - p;
+        let ease = 1 - (pInv * pInv * pInv);
+        flipAngle = -90 + (ease * 90);
+      }
+      
+      // Apply standalone flip for mobile devices (no tick loop)
+      if (!isDesktop && cvWrapper) {
+        cvWrapper.style.transform = `perspective(2000px) rotateY(${flipAngle}deg) scale3d(${flipScale}, ${flipScale}, 1)`;
+      }
+      
+      if (progress < 1) {
+        requestAnimationFrame(flipAnim);
+      } else {
+        flipAngle = 0;
+        flipScale = 1;
+        isFlipping = false;
+        themeToggle.removeAttribute('data-swapped');
+        if (!isDesktop && cvWrapper) {
+          cvWrapper.style.transform = `none`;
+        }
+      }
+    }
+    requestAnimationFrame(flipAnim);
   });
 
   // ══════════════════════════════════════════
@@ -668,15 +721,12 @@
 
     cvWrapper.addEventListener('mouseenter', () => { 
       isHoveringCv = true; 
-      cvWrapper.style.transition = 'none';
     });
     
     cvWrapper.addEventListener('mouseleave', () => { 
       isHoveringCv = false; 
       targetTiltX = 0; targetTiltY = 0;
       if (cvDocument) cvDocument.style.setProperty('--spot-op', '0');
-      
-      // Let lerp engine naturally return it to 0 without CSS fighting it
     });
 
     document.addEventListener('mousemove', e => {
@@ -691,6 +741,7 @@
         cvDocument.style.setProperty('--doc-y', `${e.clientY - rect.top}px`);
         cvDocument.style.setProperty('--spot-op', '1');
         
+        // Very subtle target tilts
         targetTiltX = (e.clientX - (rect.left + rect.width/2)) / (rect.width/2);
         targetTiltY = (e.clientY - (rect.top + rect.height/2)) / (rect.height/2);
       }
@@ -709,12 +760,12 @@
       trailX += trailVX; trailY += trailVY;
       trail.style.transform = `translate3d(${trailX - 18}px, ${trailY - 18}px, 0)`;
 
-      // Smooth Physics Lerp for 3D Card Hover (No CSS transitions fighting it)
+      // Smooth Physics Lerp for 3D Card Hover & Flip combined
       if (cvWrapper) {
         currentTiltX += (targetTiltX - currentTiltX) * 0.1;
         currentTiltY += (targetTiltY - currentTiltY) * 0.1;
-        const currentScale = 1 + (Math.abs(currentTiltX) + Math.abs(currentTiltY)) * 0.003;
-        cvWrapper.style.transform = `perspective(2000px) rotateY(${currentTiltX * 0.7}deg) rotateX(${-currentTiltY * 0.7}deg) scale3d(${currentScale}, ${currentScale}, ${currentScale})`;
+        const currentScale = (1 + (Math.abs(currentTiltX) + Math.abs(currentTiltY)) * 0.003) * flipScale;
+        cvWrapper.style.transform = `perspective(2000px) rotateY(${currentTiltX * 0.5 + flipAngle}deg) rotateX(${-currentTiltY * 0.5}deg) scale3d(${currentScale}, ${currentScale}, 1)`;
       }
 
       // Hover Preview Popup Lerp logic
