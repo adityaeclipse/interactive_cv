@@ -5,24 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aditya Sharma — Graphic Designer / Visual Artist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Roboto+Slab:wght@600;800;900&family=Manrope:wght@300;400;500;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* ── HOUDINI CUSTOM PROPERTIES for smooth animation ── */
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @property --text-reveal {
+    syntax: '<percentage>';
+    initial-value: 0%;
+    inherits: false;
+  }
+
   :root {
-    --c-bg: #050505; 
-    --c-surface: rgba(255, 255, 255, 0.02);
-    --c-border: rgba(255, 255, 255, 0.08);
+    --c-bg: #050505;
+    --c-surface: rgba(12, 12, 12, 0.88);
+    --c-border: rgba(255, 255, 255, 0.07);
     --c-text: #ffffff;
     --c-muted: rgba(255, 255, 255, 0.55);
-    --c-orange: #FF5E00; 
+    --c-orange: #FF5E00;
     --c-violet: #A033FF;
     --grad-primary: linear-gradient(135deg, var(--c-orange) 0%, var(--c-violet) 100%);
   }
 
-  html { scroll-behavior: auto; } 
+  html { scroll-behavior: smooth; }
 
   body {
     background-color: var(--c-bg); color: var(--c-text);
@@ -30,94 +42,163 @@
     overflow-x: hidden; cursor: none;
   }
 
-  /* ── STRICT TYPOGRAPHY ── */
-  p, .skill-desc, .exp-desc { 
-    word-break: normal !important; 
-    overflow-wrap: break-word !important;
-    -webkit-hyphens: none !important; 
-    hyphens: none !important;
-    text-wrap: pretty; 
+  /* GLOBAL SPOTLIGHT EFFECT */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(600px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(255, 255, 255, 0.03), transparent 40%);
+    pointer-events: none;
+    z-index: 9995;
+    mix-blend-mode: screen;
+    will-change: background;
   }
 
-  /* ── 1. GLOBAL BACKGROUND ── */
-  .bg-mesh-container { 
-    position: fixed; inset: -20%; z-index: -3; pointer-events: none; 
-    will-change: transform; /* Hardware Acceleration */
+  p, .skill-desc, .exp-desc {
+    word-break: normal !important; overflow-wrap: break-word !important;
+    -webkit-hyphens: none !important; hyphens: none !important; text-wrap: pretty;
   }
-  .bg-mesh { width: 100%; height: 100%; position: relative; background-color: var(--c-bg); overflow: hidden; }
+
+  /* ── PRELOADER ── */
+  .preloader {
+    position: fixed; inset: 0; z-index: 99999; background: var(--c-bg);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0, 1), visibility 0.7s;
+  }
+  .preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+  .preloader-logo {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(4rem, 10vw, 8rem); color: #fff; opacity: 0;
+    animation: preloaderIn 0.8s 0.1s forwards;
+  }
+  .preloader-line {
+    width: 0; height: 2px; background: var(--grad-primary); margin-top: 1.5rem;
+    animation: preloaderLine 1s 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes preloaderIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  @keyframes preloaderLine { from { width: 0; } to { width: 120px; } }
+
+  /* ── FLOATING PARTICLES ── */
+  .particle {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: -1;
+    background: rgba(255, 255, 255, 0.12);
+    animation: particleDrift linear infinite;
+  }
+  @keyframes particleDrift {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    8%   { opacity: var(--p-opacity, 0.12); }
+    92%  { opacity: var(--p-opacity, 0.12); }
+    100% { transform: translateY(-105vh) translateX(var(--p-drift, 30px)); opacity: 0; }
+  }
+
+  /* ── BACKGROUND WITH GOOEY METABALL FILTER ── */
+  .bg-mesh-container {
+    position: fixed; inset: -15%; z-index: -3; pointer-events: none;
+    will-change: transform; contain: strict;
+  }
+  .bg-mesh { 
+    width: 100%; height: 100%; position: relative; 
+    background-color: var(--c-bg); overflow: hidden; 
+    filter: url('#goo'); 
+  }
   .mesh-blob {
-    position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
-    background: #ffffff; animation: fluidFloat infinite alternate ease-in-out; 
-    will-change: transform; transform: translateZ(0); /* Force GPU Render */
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15;
+    animation: fluidFloat infinite alternate ease-in-out;
+    will-change: transform; transform: translateZ(0);
+    transition: background 2s ease;
   }
-  .mesh-blob-1 { width: 70vw; height: 70vw; top: -10vh; left: -10vw; animation-duration: 15s; }
-  .mesh-blob-2 { width: 80vw; height: 80vw; bottom: -20vh; right: -20vw; animation-duration: 18s; animation-delay: -3s; }
-  .mesh-blob-3 { width: 60vw; height: 60vw; top: 40vh; left: 20vw; animation-duration: 16s; animation-delay: -5s; }
-
-  @keyframes fluidFloat { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(5vw, 3vh, 0) scale(1.05); } }
+  .mesh-blob-1 { width: 60vw; height: 60vw; top: -10vh; left: -10vw; animation-duration: 18s; background: #FF5E00; }
+  .mesh-blob-2 { width: 70vw; height: 70vw; bottom: -20vh; right: -20vw; animation-duration: 22s; animation-delay: -4s; background: #A033FF; }
+  @keyframes fluidFloat { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 4vh, 0) scale(1.05); } }
 
   .bg-noise {
-    position: fixed; inset: 0; z-index: -2; pointer-events: none;
-    /* Reduced Octaves from 2 to 1 for 50% less GPU load */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-    will-change: transform; transform: translateZ(0);
+    position: fixed; inset: -50%; z-index: -2; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    transform: translateZ(0);
+    animation: noiseShift 0.8s steps(3) infinite;
+  }
+  @keyframes noiseShift {
+    0% { transform: translate3d(0, 0, 0); }
+    33% { transform: translate3d(-40px, -20px, 0); }
+    66% { transform: translate3d(20px, -40px, 0); }
+    100% { transform: translate3d(0, 0, 0); }
   }
 
-  /* OPTIMIZED: Replaced expensive backdrop-filter with CSS radial gradient */
   .blur-vignette {
     position: fixed; inset: 0; z-index: 90; pointer-events: none;
-    background: radial-gradient(circle, transparent 50%, rgba(5,5,5,0.8) 150%);
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(5,5,5,0.85) 130%);
   }
 
-  /* ── 2. SCROLL PROGRESS BAR ── */
-  .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 1000; background: transparent; }
-  .progress-bar { height: 100%; width: 0%; background: var(--grad-primary); transition: width 0.1s ease; will-change: width; }
+  /* ── SCROLL PROGRESS ── */
+  .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 10000; background: transparent; }
+  .progress-bar { height: 100%; width: 0%; background: var(--grad-primary); will-change: width; }
 
-  /* ── 3. INTERACTIVE CURSOR ── */
+  /* ── CURSOR + GLOW TRAIL ── */
   .cursor {
     width: 14px; height: 14px; background: #fff; border-radius: 50%;
     position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
-    will-change: transform, width, height; mix-blend-mode: difference;
-    transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+    will-change: transform; mix-blend-mode: difference;
+    transition: width 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                height 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                background 0.3s, mix-blend-mode 0.3s;
   }
   .cursor-trail {
-    width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
+    width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
     position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
-    will-change: transform; transition: transform 0.1s ease-out;
-  }
-  .cursor.clicking { transform: scale(0.6) !important; }
-
-  /* ── 4. FLOATING COLLAGE PREVIEW POPUP ── */
-  .work-preview {
-    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9997;
     will-change: transform;
   }
+  .glow-orb {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 9996;
+    will-change: transform; opacity: 0;
+  }
+  .glow-orb:nth-child(1) { width: 8px; height: 8px; background: var(--c-orange); }
+  .glow-orb:nth-child(2) { width: 6px; height: 6px; background: #d04aaa; }
+  .glow-orb:nth-child(3) { width: 5px; height: 5px; background: #b03ddd; }
+  .glow-orb:nth-child(4) { width: 4px; height: 4px; background: var(--c-violet); }
+
+  /* ── WORK PREVIEW POPUP ── */
+  .work-preview { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9997; will-change: transform; }
   .work-preview-inner {
-    width: 460px;
-    padding: 16px; background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    width: 460px; padding: 16px;
+    background: rgba(10, 10, 10, 0.92);
     border: 1px solid rgba(255, 94, 0, 0.3); border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(255, 94, 0, 0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(255, 94, 0, 0.12);
     opacity: 0; transform: scale(0.85) translateY(20px);
-    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: opacity 0.35s cubic-bezier(0.23, 1, 0.32, 1), transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   }
   .work-preview.active .work-preview-inner { opacity: 1; transform: scale(1) translateY(0); }
-  
   .preview-header { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-orange); margin-bottom: 12px; }
   .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 120px; gap: 12px; }
   .preview-grid img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); background: #111; }
   .preview-grid img:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-  .preview-grid img:nth-child(2) { grid-column: span 1; grid-row: span 1; }
-  .preview-grid img:nth-child(3) { grid-column: span 1; grid-row: span 1; }
   .preview-grid img:nth-child(4) { grid-column: span 3; grid-row: span 1; aspect-ratio: auto; }
 
-  /* ── 5. PAGE WRAPPER ── */
+  /* ── PAGE WRAPPER ── */
   .page-wrapper { max-width: 1400px; margin: 0 auto; position: relative; background-color: var(--c-bg); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+  section { padding: 4.5rem 5rem; position: relative; contain: layout style; }
 
-  section { padding: 4.5rem 5rem; position: relative; }
+  /* ── SECTION DIVIDERS ── */
+  .section-divider {
+    height: 1px; margin: 0; border: none; position: relative; overflow: visible;
+    background: linear-gradient(90deg, transparent 0%, var(--c-border) 20%, var(--c-border) 80%, transparent 100%);
+  }
+  .section-divider::after {
+    content: ''; position: absolute; top: -1px; left: 0; width: 60px; height: 3px;
+    background: var(--grad-primary); border-radius: 2px;
+    animation: dividerGlow 4s ease-in-out infinite alternate;
+  }
+  @keyframes dividerGlow {
+    0% { left: 0%; opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { left: calc(100% - 60px); opacity: 0.3; }
+  }
 
   .section-label { font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 1.5rem; }
-  .section-title { font-family: 'Instrument Serif', serif; font-size: clamp(3rem, 6vw, 4.8rem); font-style: italic; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 2rem; color: #fff; }
+  .section-title {
+    font-family: 'Instrument Serif', serif; font-size: clamp(3rem, 6vw, 4.8rem);
+    font-style: italic; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 2rem; color: #fff;
+  }
 
   .hover-line { position: relative; text-decoration: none; display: inline-block; transition: color 0.3s; padding-bottom: 2px; }
   .hover-line::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--grad-primary); transition: width 0.4s ease; }
@@ -125,109 +206,207 @@
   .hover-line:hover::after { width: 100%; }
 
   /* ── HERO ── */
-  .hero { 
+  .hero {
     min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative;
     background-image: url('ADI01978.png'); background-size: cover; background-position: center;
   }
   .hero::before {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.8) 70%, rgba(5,5,5,1) 100%); z-index: 0; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.3) 0%, rgba(5,5,5,0.8) 70%, rgba(5,5,5,1) 100%);
+    z-index: 0; pointer-events: none;
   }
   .hero > * { position: relative; z-index: 1; }
-
-  .hero-tag { font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); opacity: 0; animation: fadeUp 0.8s 0.2s forwards; margin-bottom: 1.5rem; }
   
-  .slab-name { 
-    font-family: 'Roboto Slab', serif; font-weight: 800; font-size: clamp(4.5rem, 10vw, 9rem); 
-    text-transform: uppercase; line-height: 0.9; letter-spacing: -0.02em; opacity: 0; 
-    animation: fadeUp 0.9s 0.4s forwards; margin-bottom: 2rem; color: #fff; display: inline-block;
-  }
-  .glitch-word { display: inline-block; white-space: nowrap; cursor: crosshair; }
-  .glitch-word span { display: inline-block; min-width: 0.7ch; text-align: left; transition: color 0.2s; }
-  
-  .block-font { 
-    font-family: 'Manrope', sans-serif !important; 
-    font-weight: 800 !important; 
-    color: var(--c-orange); 
-    font-size: 0.85em; 
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    width: 100%;
   }
 
-  .script-flare { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300; color: var(--c-orange); padding: 0 0.1em; font-size: 1.1em;}
+  .hero-tag {
+    font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--c-muted);
+    opacity: 0; animation: fadeUp 0.8s 0.6s forwards; margin-bottom: 1.5rem;
+  }
+  
+  /* FIXED: Rotating hero words - Dynamic Width + Crossfade */
+  .role-rotator { 
+    position: relative; 
+    display: inline-block; 
+    overflow: hidden; 
+    vertical-align: bottom;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .role-word {
+    position: absolute; 
+    left: 0; top: 0;
+    opacity: 0; 
+    transform: translateY(100%);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: nowrap;
+  }
+  .role-word.active {
+    opacity: 1; 
+    transform: translateY(0);
+  }
+  .role-word.exit {
+    opacity: 0; 
+    transform: translateY(-100%);
+  }
 
-  .hero-role { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 300; color: var(--c-muted); opacity: 0; animation: fadeUp 0.9s 0.7s forwards; max-width: 580px; margin-bottom: 3.5rem; }
-  .hero-links { display: flex; gap: 2rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.9s 0.8s forwards; }
+  .slab-name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: 'Roboto Slab', serif; font-weight: 800; font-size: clamp(4.5rem, 10vw, 9rem);
+    text-transform: uppercase; line-height: 0.9; letter-spacing: -0.02em;
+    opacity: 0; animation: fadeUp 0.9s 0.8s forwards; margin-bottom: 2rem; color: #fff;
+  }
+  
+  .glitch-word { display: flex; flex-direction: row; white-space: nowrap; cursor: crosshair; }
+  .glitch-word span {
+    display: inline-block; min-width: 0.7ch; text-align: left;
+    transition: color 0.2s, opacity 0.15s;
+  }
+
+  .block-font {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 800 !important; color: var(--c-orange); font-size: 0.85em;
+  }
+  .script-flare { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300; color: var(--c-orange); padding: 0 0.1em; font-size: 1.1em; }
+
+  .hero-role { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 300; color: var(--c-muted); opacity: 0; animation: fadeUp 0.9s 1.1s forwards; max-width: 580px; margin-bottom: 3.5rem; }
+  .hero-links { display: flex; gap: 2rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.9s 1.3s forwards; width: 100%; }
   .hero-link { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
+
+  /* ── HERO SCROLL INDICATOR ── */
+  .scroll-indicator {
+    position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%); z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 0.8s 1.8s forwards;
+    transition: opacity 0.4s;
+  }
+  .scroll-indicator.hidden { opacity: 0 !important; }
+  .scroll-indicator-text {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--c-muted);
+  }
+  .scroll-indicator-arrow {
+    width: 20px; height: 20px; border-right: 1.5px solid var(--c-muted); border-bottom: 1.5px solid var(--c-muted);
+    transform: rotate(45deg); animation: scrollBounce 2s ease-in-out infinite;
+  }
+  @keyframes scrollBounce {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.5; }
+    50% { transform: rotate(45deg) translate(4px, 4px); opacity: 1; }
+  }
 
   /* ── ABOUT ── */
   .about-container { display: flex; flex-direction: column; gap: 2.5rem; }
-  .about-text { font-size: 1.25rem; line-height: 1.7; color: var(--c-muted); max-width: 100%; width: 100%; }
+  .about-text { font-size: 1.25rem; line-height: 1.7; color: var(--c-muted); max-width: 100%; }
   .about-text p + p { margin-top: 1.5rem; }
   .about-text strong { color: var(--c-text); font-weight: 500; }
 
-  /* ── ORGANIC TEXTURED LIQUID GLASS EFFECTS ── */
-  .portfolio-cta, .glass-card {
+  /* Scroll-driven text reveal via gradient mask */
+  .text-reveal-wrap {
+    -webkit-mask-image: linear-gradient(175deg, #000 var(--text-reveal, 0%), rgba(0,0,0,0.25) calc(var(--text-reveal, 0%) + 12%));
+    mask-image: linear-gradient(175deg, #000 var(--text-reveal, 0%), rgba(0,0,0,0.25) calc(var(--text-reveal, 0%) + 12%));
+  }
+
+  /* ── GLASS CARDS — Spinning conic border + glow ── */
+  .glass-card, .portfolio-cta {
     position: relative; overflow: hidden;
-    background: var(--c-surface); border-radius: 20px;
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.05); 
-    transform-style: preserve-3d; transition: transform 0.4s;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 20px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.4s;
     will-change: transform;
+    contain: layout style;
   }
-  
-  .portfolio-cta::before, .glass-card::before {
+
+  /* Hover glow */
+  .glass-card::before, .portfolio-cta::before {
     content: ''; position: absolute;
-    top: var(--mouse-y, 50%); left: var(--mouse-x, 50%);
-    width: 450px; height: 450px;
-    background-image: 
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.35'/%3E%3C/svg%3E"),
-      radial-gradient(circle, rgba(255, 94, 0, 0.4) 0%, rgba(160, 51, 255, 0.3) 40%, transparent 70%);
-    background-blend-mode: overlay, normal;
-    -webkit-mask-image: radial-gradient(circle, black 0%, transparent 65%);
-    mask-image: radial-gradient(circle, black 0%, transparent 65%);
-    transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; z-index: 0;
+    top: var(--mouse-local-y, 50%); left: var(--mouse-local-x, 50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255, 94, 0, 0.15) 0%, rgba(160, 51, 255, 0.08) 35%, transparent 65%);
+    transform: translate(-50%, -50%);
+    opacity: 0; transition: opacity 0.4s ease;
+    pointer-events: none; z-index: 0;
   }
-  
-  .portfolio-cta::after, .glass-card::after {
+
+  /* Spinning border glow — conic gradient with @property animation */
+  .glass-card::after, .portfolio-cta::after {
     content: ''; position: absolute; inset: 0;
-    border-radius: inherit; padding: 1.5px; 
-    background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 94, 0, 0.8), transparent 40%);
+    border-radius: inherit; padding: 1.5px;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      transparent 0%,
+      transparent 65%,
+      var(--c-orange) 75%,
+      var(--c-violet) 82%,
+      transparent 90%,
+      transparent 100%
+    );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
-    pointer-events: none; opacity: 0; transition: opacity 0.4s ease; z-index: 2;
+    pointer-events: none; opacity: 0; transition: opacity 0.5s ease; z-index: 2;
   }
 
-  .portfolio-cta:hover::before, .portfolio-cta:hover::after,
-  .glass-card:hover::before, .glass-card:hover::after { opacity: 1; }
-  
-  .portfolio-cta-wrapper { display: inline-flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; padding: 10px 0; }
-  
-  .portfolio-cta { 
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
-    padding: 1.2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--c-text); border-radius: 100px; text-decoration: none; cursor: none; 
+  .glass-card:hover::before, .portfolio-cta:hover::before { opacity: 1; }
+  .glass-card:hover::after, .portfolio-cta:hover::after {
+    opacity: 1;
+    animation: borderSpin 3s linear infinite;
   }
-  .portfolio-cta::before { width: 300px; height: 300px; } 
-  .portfolio-cta-text { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.75rem; pointer-events: none;}
+  @keyframes borderSpin { to { --border-angle: 360deg; } }
 
-  .glass-content { position: relative; z-index: 1; transform: translateZ(30px); pointer-events: none; }
+  .glass-card:hover { border-color: rgba(255, 94, 0, 0.12); }
+
+  .glass-content { position: relative; z-index: 1; transform: translateZ(20px); pointer-events: none; }
   .glass-card { padding: 2.5rem; }
 
+  .portfolio-cta-wrapper { display: inline-flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; padding: 10px 0; }
+  .portfolio-cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+    padding: 1.2rem 2.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--c-text); border-radius: 100px; text-decoration: none; cursor: none;
+  }
+  .portfolio-cta::before { width: 250px; height: 250px; }
+  .portfolio-cta-text { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.75rem; pointer-events: none; }
+
+  /* ── STATS ── */
   .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
-  .stat-num { font-family: 'Instrument Serif', serif; font-size: 3.5rem; font-style: italic; line-height: 1; margin-bottom: 0.5rem; color: #fff; }
-  .stat-label { font-size: 0.95rem; color: var(--c-muted); font-family: 'Manrope', sans-serif;}
+  .stat-num {
+    font-family: 'Instrument Serif', serif; font-size: 3.5rem; font-style: italic;
+    line-height: 1; margin-bottom: 0.5rem; color: #fff;
+    display: inline-block;
+  }
+  .stat-label { font-size: 0.95rem; color: var(--c-muted); }
 
   /* ── EXPERIENCE ── */
   .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .exp-period { font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--c-muted); margin-bottom: 1.5rem; }
-  .exp-period span { display: inline-block; font-size: 0.7rem; color: var(--c-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; border: 1px solid var(--c-border); padding: 0.2rem 0.6rem; border-radius: 100px; transition: color 0.3s, border-color 0.3s;}
-  .glass-card:hover .exp-period span { color: #fff; border-color: rgba(255, 94, 0, 0.4); }
-  
+  .exp-period span {
+    display: inline-block; font-size: 0.7rem; color: var(--c-muted); letter-spacing: 0.2em;
+    text-transform: uppercase; margin-bottom: 0.5rem;
+    border: 1px solid var(--c-border); padding: 0.2rem 0.6rem; border-radius: 100px;
+    transition: color 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  }
+  .glass-card:hover .exp-period span { color: #fff; border-color: rgba(255, 94, 0, 0.4); background: rgba(255, 94, 0, 0.08); box-shadow: 0 0 12px rgba(255, 94, 0, 0.15); }
   .exp-company { font-family: 'Manrope', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--c-text); }
   .exp-title { font-size: 0.85rem; color: var(--c-muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; }
   .exp-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; padding-top: 1.5rem; }
-  .tag { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid var(--c-border); color: var(--c-muted); }
+  .tag {
+    font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em;
+    padding: 0.4rem 1rem; border-radius: 100px;
+    border: 1px solid var(--c-border); color: var(--c-muted);
+    transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+  .glass-card:hover .tag { border-color: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.7); box-shadow: 0 0 8px rgba(255, 255, 255, 0.03); }
 
-  /* ── CORPORATE DISCLAIMER ── */
   .exp-disclaimer { margin-top: 3rem; text-align: left; border-top: 1px solid var(--c-border); padding-top: 1.5rem; }
   .exp-disclaimer p { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--c-muted); }
 
@@ -235,110 +414,169 @@
   .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
   .skill-name { font-family: 'Manrope', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: var(--c-text); }
 
-  /* ── SOFTWARE ECOSYSTEM ── */
+  /* ── SOFTWARE ── */
   .software-section { margin-top: 4rem; }
-  .software-list { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; margin-top: 1.5rem;}
+  .software-list { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; margin-top: 1.5rem; }
   .software-item {
     font-family: 'Instrument Serif', serif; font-style: italic;
-    font-size: clamp(1.8rem, 4vw, 3rem); 
-    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.2);
     transition: color 0.4s, -webkit-text-stroke 0.4s, text-shadow 0.4s, transform 0.4s;
     cursor: none; line-height: 1; padding: 0.2rem 0;
   }
-  .software-item:hover { color: #fff; -webkit-text-stroke: 1px #fff; text-shadow: 0 0 25px rgba(255, 94, 0, 0.6); transform: scale(1.05); }
+  .software-item:hover {
+    color: #fff; -webkit-text-stroke: 1px #fff;
+    text-shadow: 0 0 30px rgba(255, 94, 0, 0.5), 0 0 60px rgba(160, 51, 255, 0.2);
+    transform: scale(1.05) translateY(-2px);
+  }
+  .software-item.near-hover {
+    color: rgba(255, 255, 255, 0.25); -webkit-text-stroke: 1px rgba(255,255,255,0.35);
+    text-shadow: 0 0 15px rgba(255, 94, 0, 0.15);
+    transform: scale(1.02);
+  }
 
-  /* ── INTERESTS & LANGUAGES ── */
+  /* ── LANGUAGES ── */
   .languages-strip { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--c-border); }
-  .lang-title { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.15em; align-self: center;}
+  .lang-title { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.15em; align-self: center; }
   .lang-item { font-size: 0.95rem; color: #fff; font-weight: 500; }
 
-  /* ── CLIENTS MARQUEE ── */
-  .marquee-wrap { overflow: hidden; padding: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.03); background: transparent; opacity: 0.3; }
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden; padding: 1.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.03);
+    background: transparent; opacity: 0.3;
+    transition: opacity 0.4s;
+  }
+  .marquee-wrap:hover { opacity: 0.6; }
   .marquee-inner { display: flex; width: max-content; animation: marquee 35s linear infinite; will-change: transform; }
+  .marquee-wrap:hover .marquee-inner { animation-play-state: paused; }
   .marquee-content { display: flex; gap: 4rem; padding-right: 4rem; align-items: center; }
   @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-  .client-name { font-family: 'DM Mono', monospace; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-text); }
+  .client-name { font-family: 'DM Mono', monospace; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-text); transition: color 0.3s; }
+  .marquee-wrap:hover .client-name { color: var(--c-orange); }
   .client-sep { color: var(--c-orange); font-size: 0.5rem; }
 
   /* ── ANIMATIONS ── */
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); filter: blur(6px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+
+  .reveal {
+    opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(10px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .reveal-delay-1 { transition-delay: 0.12s; }
+  .reveal-delay-2 { transition-delay: 0.24s; }
+  .reveal-delay-3 { transition-delay: 0.36s; }
 
   /* ── NAV ── */
-  nav { 
-    position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100; 
-    padding: 2rem 5rem; width: 100%; max-width: 1400px; 
-    display: flex; align-items: center; 
+  nav {
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 100;
+    padding: 2rem 5rem; width: 100%; max-width: 1400px;
+    display: flex; align-items: center;
+    transition: padding 0.4s, background 0.4s, border-color 0.4s;
+    border-bottom: 1px solid transparent;
   }
-  .nav-logo { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.8rem; color: #fff; text-decoration: none; margin-right: auto;}
-  .nav-links { display: flex; gap: 3rem; margin-right: 3rem;}
+  nav.scrolled {
+    padding: 1rem 5rem;
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+  .nav-logo { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.8rem; color: #fff; text-decoration: none; margin-right: auto; }
+  .nav-links { display: flex; gap: 3rem; margin-right: 3rem; }
   .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-muted); }
-  
+
   .nav-actions { display: flex; gap: 1rem; align-items: center; }
   .nav-cta {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
     font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
     color: #fff; text-decoration: none; background: rgba(255,255,255,0.02); cursor: none;
-    backdrop-filter: blur(10px); transition: border-color 0.3s, background 0.3s, color 0.3s;
+    transition: border-color 0.3s, background 0.3s, color 0.3s, transform 0.3s;
   }
-  .nav-cta:hover { background: rgba(255,255,255,0.06); border-color: var(--c-orange); color: #fff; }
+  .nav-cta:hover { background: rgba(255,255,255,0.06); border-color: var(--c-orange); transform: translateY(-1px); }
 
   /* ── FOOTER ── */
   footer { padding: 6rem 5rem 3rem; border-top: 1px solid var(--c-border); display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
-  .footer-name { font-family: 'Roboto Slab', serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1; color: #fff; text-transform: uppercase; }
+  .footer-name {
+    font-family: 'Roboto Slab', serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800;
+    line-height: 1; text-transform: uppercase;
+    background: linear-gradient(135deg, #fff 0%, #fff 45%, var(--c-orange) 55%, var(--c-violet) 100%);
+    background-size: 250% 100%;
+    background-position: 0% 0%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-position 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .footer-name:hover { background-position: 100% 0%; }
   .footer-contact { text-align: right; }
   .footer-contact a { display: block; font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--c-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em; text-decoration: none; transition: color 0.3s; }
   .footer-contact a:hover { color: #fff; }
   .footer-bottom { padding: 2rem 5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: rgba(240,237,245,0.3); letter-spacing: 0.1em; text-transform: uppercase; }
 
-  /* ── MOBILE OPTIMIZATION OVERRIDES ── */
+  /* ── MOBILE ── */
   @media (hover: none) and (pointer: coarse), (max-width: 900px) {
     body, .glitch-word, .portfolio-cta, .software-item, a, button { cursor: auto !important; }
-    .cursor, .cursor-trail, .work-preview { display: none !important; }
-    
+    .cursor, .cursor-trail, .work-preview, .glow-orb, .particle { display: none !important; }
+    .scroll-indicator { display: none !important; }
+    body::after { display: none !important; }
     section { padding: 4rem 1.5rem; }
     nav { padding: 1.5rem; }
+    nav.scrolled { padding: 1rem 1.5rem; }
     .page-wrapper { margin: 0; width: 100%; box-shadow: none; }
     .about-stats, .exp-grid, .skills-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
-    
     footer { flex-direction: column; align-items: flex-start; gap: 3rem; padding: 4rem 1.5rem 2rem; }
     .footer-contact { text-align: left; }
     .footer-bottom { padding: 2rem 1.5rem; }
-    
     .portfolio-cta-wrapper { flex-direction: column; width: 100%; padding: 0; }
     .portfolio-cta { width: 100%; margin-bottom: 1rem; }
-    
-    .glass-card::before, .portfolio-cta::before {
-      opacity: 0.9 !important; transition: none !important; 
-      width: 350px !important; height: 350px !important; 
-    }
+    .glass-card::before, .portfolio-cta::before { opacity: 0.8 !important; transition: none !important; }
     .glass-card::after, .portfolio-cta::after { display: none !important; }
-    
     .block-font { font-size: 0.75em !important; }
+    .reveal { filter: none; transform: translateY(30px) scale(1); }
+    .reveal.visible { filter: none; }
+    .text-reveal-wrap { -webkit-mask-image: none !important; mask-image: none !important; }
+    .hero-content { transform: none !important; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   }
 </style>
 </head>
 <body>
 
+<!-- Hidden SVG Filter for Liquid Background -->
+<svg style="display:none;">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="25" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">AS</div>
+  <div class="preloader-line"></div>
+</div>
+
 <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 
 <div class="work-preview" id="workPreview">
   <div class="work-preview-inner" id="workPreviewInner">
-    <div class="preview-header">Visual Context</div>
+    <div class="preview-header" data-i18n="preview_header">Visual Context</div>
     <div class="preview-grid" id="previewGrid"></div>
   </div>
 </div>
 
 <div class="bg-mesh-container" id="bgMeshContainer">
   <div class="bg-mesh">
-    <div class="mesh-blob mesh-blob-1"></div>
-    <div class="mesh-blob mesh-blob-2"></div>
-    <div class="mesh-blob mesh-blob-3"></div>
+    <div class="mesh-blob mesh-blob-1" id="blob1"></div>
+    <div class="mesh-blob mesh-blob-2" id="blob2"></div>
   </div>
 </div>
 <div class="bg-noise"></div>
@@ -346,18 +584,21 @@
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-trail" id="cursorTrail"></div>
+<div class="glow-orb" id="orb0"></div>
+<div class="glow-orb" id="orb1"></div>
+<div class="glow-orb" id="orb2"></div>
+<div class="glow-orb" id="orb3"></div>
 
-<nav>
-  <a class="nav-logo scroll-link" href="#top" id="navLogo">AS</a>
+<nav id="mainNav">
+  <a class="nav-logo scroll-link magnetic-el" href="#top" id="navLogo">AS</a>
   <div class="nav-links">
-    <a class="hover-line scroll-link" href="#about" data-i18n="nav_about">About</a>
-    <a class="hover-line scroll-link" href="#experience" data-i18n="nav_exp">Experience</a>
-    <a class="hover-line scroll-link" href="#skills" data-i18n="nav_skills">Skills</a>
+    <a class="hover-line scroll-link magnetic-el" href="#about" data-i18n="nav_about">About</a>
+    <a class="hover-line scroll-link magnetic-el" href="#experience" data-i18n="nav_exp">Experience</a>
+    <a class="hover-line scroll-link magnetic-el" href="#skills" data-i18n="nav_skills">Skills</a>
   </div>
-  
   <div class="nav-actions">
-    <button class="nav-cta" id="langToggle">EN / JP</button>
-    <a class="nav-cta" href="Aditya_Sharma_CV.pdf" download target="_blank">
+    <button class="nav-cta magnetic-el" id="langToggle">EN / JP</button>
+    <a class="nav-cta magnetic-el" href="Aditya_Sharma_CV.pdf" download target="_blank">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       <span data-i18n="nav_cv">PDF CV</span>
     </a>
@@ -365,61 +606,79 @@
 </nav>
 
 <div class="page-wrapper" id="top">
-  
+
   <section class="hero">
-    <span class="hero-tag" data-i18n="hero_tag">Visual Artist & Graphic Designer</span>
-    
-    <div class="slab-name">
-      <div class="glitch-word" data-word="Aditya">
-        <span>A</span><span>d</span><span>i</span><span>t</span><span>y</span><span>a</span>
+    <div class="hero-content" id="heroContent">
+      <span class="hero-tag">
+        <span class="role-rotator" id="roleRotator">
+          <!-- Invisible baseline/height anchor to prevent container collapse -->
+          <span style="visibility: hidden; pointer-events: none;">&nbsp;</span>
+          <span class="role-word active" data-i18n-role="0">Visual Artist</span>
+          <span class="role-word" data-i18n-role="1">Brand Designer</span>
+          <span class="role-word" data-i18n-role="2">Creative Director</span>
+          <span class="role-word" data-i18n-role="3">Storyteller</span>
+        </span>
+        <span data-i18n="hero_gd">&nbsp;&amp; Graphic Designer</span>
+      </span>
+
+      <div class="slab-name">
+        <div class="glitch-word" data-word="Aditya">
+          <span>A</span><span>d</span><span>i</span><span>t</span><span>y</span><span>a</span>
+        </div>
+        <div class="glitch-word" data-word="Sharma">
+          <span>S</span><span>h</span><span>a</span><span>r</span><span>m</span><span>a</span>
+        </div>
       </div>
-      <br>
-      <div class="glitch-word" data-word="Sharma">
-        <span>S</span><span>h</span><span>a</span><span>r</span><span>m</span><span>a</span>
+
+      <p class="hero-role" data-i18n="hero_role">Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.</p>
+      <div class="hero-links">
+        <a class="hero-link hover-line magnetic-el" href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
+        <a class="hero-link hover-line magnetic-el" href="https://www.artofstorms.in" target="_blank">artofstorms.in</a>
+        <a class="hero-link hover-line magnetic-el" href="tel:+919643118898">+91 9643-11 88 98</a>
       </div>
     </div>
 
-    <p class="hero-role" data-i18n="hero_role">Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.</p>
-    <div class="hero-links">
-      <a class="hero-link hover-line" href="mailto:hello.aditya@icloud.com">hello.aditya@icloud.com</a>
-      <a class="hero-link hover-line" href="https://www.artofstorms.in" target="_blank">artofstorms.in</a>
-      <a class="hero-link hover-line" href="tel:+919643118898">+91 9643-11 88 98</a>
+    <div class="scroll-indicator" id="scrollIndicator">
+      <span class="scroll-indicator-text" data-i18n="scroll">Scroll</span>
+      <div class="scroll-indicator-arrow"></div>
     </div>
   </section>
 
+  <hr class="section-divider">
+
   <section id="about">
     <p class="section-label reveal" data-i18n="sec_about_label">01 — About</p>
-    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_about_title">Designing with presence.</h2>
+    <h2 class="section-title reveal reveal-delay-1 scramble-text" data-i18n="sec_about_title">Designing with presence.</h2>
 
     <div class="about-container">
-      <div class="about-text reveal reveal-delay-2">
+      <div class="about-text reveal reveal-delay-2 text-reveal-wrap" id="aboutTextWrap">
         <p data-i18n="about_p1">I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.</p>
         <p data-i18n="about_p2">I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.</p>
         <p data-i18n="about_p3">Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.</p>
-        
+
         <div class="portfolio-cta-wrapper">
           <a class="portfolio-cta preview-trigger" href="https://www.artofstorms.in" target="_blank" id="magnetic-btn" data-images="site1.jpeg">
             <span class="portfolio-cta-text"><span data-i18n="btn_recent">Recent Work</span> <span style="font-family: sans-serif; font-size: 1.2em;">→</span></span>
           </a>
         </div>
       </div>
-      
+
       <div class="about-stats reveal reveal-delay-2">
         <div class="glass-card tilt">
           <div class="glass-content">
-            <div class="stat-num">12+</div>
+            <div class="stat-num" data-count="12" data-suffix="+">0</div>
             <div class="stat-label" data-i18n="stat_yrs">Years of Experience</div>
           </div>
         </div>
         <div class="glass-card tilt">
           <div class="glass-content">
-            <div class="stat-num">20+</div>
+            <div class="stat-num" data-count="20" data-suffix="+">0</div>
             <div class="stat-label" data-i18n="stat_clients">Brand Clients</div>
           </div>
         </div>
         <div class="glass-card tilt">
           <div class="glass-content">
-            <div class="stat-num">∞</div>
+            <div class="stat-num" data-count-symbol="∞">∞</div>
             <div class="stat-label" data-i18n="stat_pixels">Pixels Pushed</div>
           </div>
         </div>
@@ -427,17 +686,19 @@
     </div>
   </section>
 
+  <hr class="section-divider">
+
   <section id="experience">
     <p class="section-label reveal" data-i18n="sec_exp_label">02 — Experience</p>
-    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_exp_title">The Journey.</h2>
+    <h2 class="section-title reveal reveal-delay-1 scramble-text" data-i18n="sec_exp_title">The Journey.</h2>
 
     <div class="exp-grid">
       <div class="glass-card tilt exp-item reveal">
         <div class="glass-content">
-          <div class="exp-period"><span data-i18n="exp_current">Current</span><br>Dec 2021 — Present</div>
-          <div class="exp-company">KPMG Global Services</div>
+          <div class="exp-period"><span data-i18n="exp_current">Current</span><br><span data-i18n="date_kpmg">Dec 2021 — Present</span></div>
+          <div class="exp-company" data-i18n="comp_kpmg">KPMG Global Services</div>
           <div class="exp-title" data-i18n="job_kpmg">Marketing Communications Specialist</div>
-          <p class="exp-desc letter-anim" data-i18n="desc_kpmg">Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.</p>
+          <p class="exp-desc" data-i18n="desc_kpmg">Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.</p>
           <div class="exp-tags">
             <span class="tag" data-i18n="tag_pres">Presentations</span><span class="tag" data-i18n="tag_motion">Motion Graphics</span><span class="tag" data-i18n="tag_event">Event Collaterals</span>
           </div>
@@ -446,34 +707,34 @@
 
       <div class="glass-card tilt exp-item reveal reveal-delay-1">
         <div class="glass-content">
-          <div class="exp-period"><span data-i18n="exp_prev">Previous</span><br>May 2019 — Dec 2021</div>
-          <div class="exp-company">Eurofins IT Solutions</div>
+          <div class="exp-period"><span data-i18n="exp_prev">Previous</span><br><span data-i18n="date_euro">May 2019 — Dec 2021</span></div>
+          <div class="exp-company" data-i18n="comp_euro">Eurofins IT Solutions</div>
           <div class="exp-title" data-i18n="job_euro">Senior Graphic Designer</div>
-          <p class="exp-desc letter-anim" data-i18n="desc_euro">Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.</p>
+          <p class="exp-desc" data-i18n="desc_euro">Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.</p>
           <div class="exp-tags">
             <span class="tag" data-i18n="tag_brand">Brand Design</span><span class="tag" data-i18n="tag_email">Emailers</span><span class="tag" data-i18n="tag_hr">HR Comms</span>
           </div>
         </div>
       </div>
-      
-      <div class="glass-card tilt exp-item reveal">
+
+      <div class="glass-card tilt exp-item reveal reveal-delay-2">
         <div class="glass-content">
-          <div class="exp-period">Sept 2016 — April 2019</div>
+          <div class="exp-period"><span data-i18n="date_geu">Sept 2016 — April 2019</span></div>
           <div class="exp-company" data-i18n="comp_geu">Graphic Era University</div>
           <div class="exp-title" data-i18n="job_geu">Graphic Designer</div>
-          <p class="exp-desc letter-anim" data-i18n="desc_geu">Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.</p>
+          <p class="exp-desc" data-i18n="desc_geu">Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.</p>
           <div class="exp-tags">
             <span class="tag" data-i18n="tag_social">Social Media</span><span class="tag" data-i18n="tag_web">Web Design</span><span class="tag" data-i18n="tag_google">Google Ads</span>
           </div>
         </div>
       </div>
 
-      <div class="glass-card tilt exp-item reveal reveal-delay-1">
+      <div class="glass-card tilt exp-item reveal reveal-delay-3">
         <div class="glass-content">
-          <div class="exp-period">Aug 2014 — Sept 2016</div>
+          <div class="exp-period"><span data-i18n="date_pr">Aug 2014 — Sept 2016</span></div>
           <div class="exp-company" data-i18n="comp_pr">Perfect Relations Pvt. Ltd.</div>
           <div class="exp-title" data-i18n="job_pr">Executive Creatives</div>
-          <p class="exp-desc letter-anim" data-i18n="desc_pr">Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.</p>
+          <p class="exp-desc" data-i18n="desc_pr">Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.</p>
           <div class="exp-tags">
             <span class="tag" data-i18n="tag_agency">PR Agency</span><span class="tag" data-i18n="tag_product">Product Ads</span><span class="tag" data-i18n="tag_app">App UI</span>
           </div>
@@ -486,54 +747,54 @@
     </div>
   </section>
 
+  <hr class="section-divider">
+
   <section id="skills">
     <p class="section-label reveal" data-i18n="sec_skills_label">03 — Skills</p>
-    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_skills_title">Creative Toolkit.</h2>
+    <h2 class="section-title reveal reveal-delay-1 scramble-text" data-i18n="sec_skills_title">Creative Toolkit.</h2>
 
     <div class="skills-grid">
       <div class="glass-card tilt reveal">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_1_name">Design & Visual Arts</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_1_desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
+          <div class="skill-desc" data-i18n="skill_1_desc">Photoshop, Illustrator, InDesign. Banners, social media, print — if it's visual, it's home territory.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_2_name">Motion & Video</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_2_desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
+          <div class="skill-desc" data-i18n="skill_2_desc">After Effects, Premiere Pro. Motion graphics, short-form video, visual effects.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_3_name">AI-Assisted Design</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_3_desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
+          <div class="skill-desc" data-i18n="skill_3_desc">Midjourney, Stable Diffusion for ideation. Prompt engineering as a creative accelerant.</div>
         </div>
       </div>
-      
       <div class="glass-card tilt reveal">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_4_name">Project Management</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_4_desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
+          <div class="skill-desc" data-i18n="skill_4_desc">Managing creative workflows, cross-team coordination, and delivery timelines in fast-paced enterprise environments.</div>
         </div>
       </div>
-      
       <div class="glass-card tilt reveal reveal-delay-1">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_5_name">Event Collaterals</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_5_desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
+          <div class="skill-desc" data-i18n="skill_5_desc">End-to-end design from signage and stage branding to digital assets and post-event communications.</div>
         </div>
       </div>
       <div class="glass-card tilt reveal reveal-delay-2">
         <div class="glass-content">
           <div class="skill-name" data-i18n="skill_6_name">Vibe Coding</div>
-          <div class="skill-desc letter-anim" data-i18n="skill_6_desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
+          <div class="skill-desc" data-i18n="skill_6_desc">Prototyping and directing AI-assisted front-end builds to get concepts from thought to screen.</div>
         </div>
       </div>
     </div>
 
     <div class="software-section reveal">
       <p class="section-label" data-i18n="software_label">Software Ecosystem</p>
-      <div class="software-list">
+      <div class="software-list" id="softwareList">
         <span class="software-item">Adobe Creative Suite</span>
         <span class="software-item">Luminar</span>
         <span class="software-item">Blender</span>
@@ -547,13 +808,15 @@
     </div>
   </section>
 
+  <hr class="section-divider">
+
   <section id="interests">
     <p class="section-label reveal" data-i18n="sec_int_label">04 — Interests</p>
-    <h2 class="section-title reveal reveal-delay-1" data-i18n="sec_int_title">Beyond the <span class="script-flare">Screen</span></h2>
+    <h2 class="section-title reveal reveal-delay-1 scramble-text" data-i18n="sec_int_title">Beyond the <span class="script-flare">Screen</span></h2>
 
     <div class="glass-card tilt reveal reveal-delay-2">
       <div class="glass-content">
-        <p class="letter-anim" style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;" data-i18n="int_desc">
+        <p style="font-size: 1.25rem; color: var(--c-muted); line-height: 1.8;" data-i18n="int_desc">
 When I step away from design, I play the piano and compose ambient music soundscapes. I also delve into visual art photography, capturing minimalist landscapes to continually refine my sense of composition and storytelling.
         </p>
       </div>
@@ -580,7 +843,7 @@ When I step away from design, I play the piano and compose ambient music soundsc
       <span style="color:var(--c-muted);">·</span>
       <span class="lang-item" data-i18n="lang_hi">Hindi (Bilingual)</span>
       <span style="color:var(--c-muted);">·</span>
-      <span class="lang-item" data-i18n="lang_jp">Japanese (N5/N4)</span>
+      <span class="lang-item" data-i18n="lang_jp">Japanese (N5)</span>
     </div>
   </section>
 
@@ -628,80 +891,204 @@ When I step away from design, I play the piano and compose ambient music soundsc
     </div>
   </footer>
   <div class="footer-bottom">
-    <span>© 2026 Aditya Sharma</span>
+    <span data-i18n="footer_copy">© 2026 Aditya Sharma</span>
     <span data-i18n="location">Gandhinagar, India</span>
   </div>
 
-</div> 
+</div>
 
 <script>
+(() => {
+  'use strict';
+
   const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  // 1. Initialize Lenis Smooth Scroll
-  const lenis = new Lenis({
-    duration: 0.8, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    direction: 'vertical', gestureDirection: 'vertical', smooth: true,
+  // ══════════════════════════════════════════
+  //  PRELOADER
+  // ══════════════════════════════════════════
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('preloader').classList.add('done'), 900);
   });
 
-  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-  requestAnimationFrame(raf);
+  // ══════════════════════════════════════════
+  //  FLOATING PARTICLES
+  // ══════════════════════════════════════════
+  if (isDesktop) {
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 22; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = 1 + Math.random() * 2;
+      const opacity = 0.06 + Math.random() * 0.1;
+      p.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        bottom: -10px;
+        width: ${size}px; height: ${size}px;
+        --p-opacity: ${opacity};
+        --p-drift: ${-30 + Math.random() * 60}px;
+        animation-duration: ${18 + Math.random() * 30}s;
+        animation-delay: ${-(Math.random() * 35)}s;
+      `;
+      frag.appendChild(p);
+    }
+    document.body.appendChild(frag);
+  }
 
+  // ══════════════════════════════════════════
+  //  SMOOTH SCROLL LINKS
+  // ══════════════════════════════════════════
   document.querySelectorAll('.scroll-link').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       e.preventDefault();
-      const targetElement = document.querySelector(this.getAttribute('href'));
-      if(targetElement) lenis.scrollTo(targetElement, { offset: 0, duration: 1.2 });
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
-  lenis.on('scroll', (e) => {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = e.scroll / scrollHeight; // Gets a value between 0 and 1
-    
-    // 1. Update progress bar
-    document.getElementById("progressBar").style.width = (progress * 100) + "%";
-    
-    // 2. Safe Parallax 
-    const bgMesh = document.getElementById("bgMeshContainer");
-    if (bgMesh) { 
-      // Your CSS inset gives a 20vh buffer. We limit max travel to 15vh.
-      // Changing to negative makes it move upward, which is visually correct for parallax depth.
-      bgMesh.style.transform = `translateY(${progress * -15}vh)`; 
+  // ══════════════════════════════════════════
+  //  SCROLL STATE
+  // ══════════════════════════════════════════
+  let scrollY = 0;
+  let scrollTicking = false;
+  const progressBar = document.getElementById('progressBar');
+  const bgMesh = document.getElementById('bgMeshContainer');
+  const mainNav = document.getElementById('mainNav');
+  const scrollIndicator = document.getElementById('scrollIndicator');
+  const aboutTextWrap = document.getElementById('aboutTextWrap');
+  const blob1 = document.getElementById('blob1');
+  const blob2 = document.getElementById('blob2');
+
+  const blobColors = [
+    { r: 255, g: 94, b: 0 },   // orange
+    { r: 180, g: 60, b: 180 },  // magenta
+    { r: 160, g: 51, b: 255 },  // violet
+  ];
+
+  function lerpColor(a, b, t) {
+    return `rgb(${Math.round(a.r + (b.r - a.r) * t)}, ${Math.round(a.g + (b.g - a.g) * t)}, ${Math.round(a.b + (b.b - a.b) * t)})`;
+  }
+
+  function onScroll() {
+    scrollY = window.scrollY;
+    if (!scrollTicking) {
+      requestAnimationFrame(updateScroll);
+      scrollTicking = true;
     }
-  });
- 
-  // ── I18N REAL-TIME TRANSLATION DICTIONARY ──
+  }
+
+  function updateScroll() {
+    scrollTicking = false;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollHeight > 0 ? scrollY / scrollHeight : 0;
+
+    progressBar.style.width = (progress * 100) + '%';
+    if (bgMesh) bgMesh.style.transform = `translateY(${progress * -12}vh)`;
+
+    if (scrollY > 80) mainNav.classList.add('scrolled');
+    else mainNav.classList.remove('scrolled');
+
+    if (scrollIndicator) {
+      if (scrollY > 200) scrollIndicator.classList.add('hidden');
+      else scrollIndicator.classList.remove('hidden');
+    }
+
+    if (aboutTextWrap) {
+      const rect = aboutTextWrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const revealProgress = Math.max(0, Math.min(1, (vh - rect.top) / (rect.height + vh * 0.2)));
+      aboutTextWrap.style.setProperty('--text-reveal', (revealProgress * 130) + '%');
+    }
+
+    const t = Math.min(progress * 1.5, 1);
+    if (t < 0.5) {
+      blob1.style.background = lerpColor(blobColors[0], blobColors[1], t * 2);
+      blob2.style.background = lerpColor(blobColors[1], blobColors[2], t * 2);
+    } else {
+      blob1.style.background = lerpColor(blobColors[1], blobColors[2], (t - 0.5) * 2);
+      blob2.style.background = lerpColor(blobColors[2], blobColors[0], (t - 0.5) * 2);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ══════════════════════════════════════════
+  //  ROTATING HERO WORDS - WITH DYNAMIC WIDTH
+  // ══════════════════════════════════════════
+  const roleRotator = document.getElementById('roleRotator');
+  const roleWords = document.querySelectorAll('.role-word');
+  const roleTexts = {
+    en: ['Visual Artist', 'Brand Designer', 'Creative Director', 'Storyteller'],
+    jp: ['ビジュアルアーティスト', 'ブランドデザイナー', 'クリエイティブディレクター', 'ストーリーテラー']
+  };
+  let roleIndex = 0;
+
+  function updateRoleWidth() {
+    if (!roleRotator || !roleWords[roleIndex]) return;
+    const currentWidth = Math.ceil(roleWords[roleIndex].getBoundingClientRect().width);
+    roleRotator.style.width = currentWidth + 'px';
+  }
+
+  // Set initial width
+  updateRoleWidth();
+  window.addEventListener('load', () => setTimeout(updateRoleWidth, 100));
+
+  setInterval(() => {
+    const current = roleWords[roleIndex];
+    current.classList.remove('active');
+    current.classList.add('exit');
+
+    roleIndex = (roleIndex + 1) % roleWords.length;
+    const next = roleWords[roleIndex];
+    
+    next.classList.remove('exit');
+    next.classList.add('active');
+    
+    updateRoleWidth();
+  }, 3000);
+
+  // ══════════════════════════════════════════
+  //  I18N TRANSLATIONS
+  // ══════════════════════════════════════════
   const translations = {
     nav_about: { en: "About", jp: "概要" },
     nav_exp: { en: "Experience", jp: "経歴" },
     nav_skills: { en: "Skills", jp: "スキル" },
     nav_cv: { en: "PDF CV", jp: "履歴書 (PDF)" },
-    hero_tag: { en: "Visual Artist & Graphic Designer", jp: "ビジュアルアーティスト & グラフィックデザイナー" },
-    hero_role: { en: 'Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.', jp: 'プリントからモーション、コンセプトから実行まで、視覚的アイデンティティとブランド体験を創り出します。' },
+    hero_role: { en: 'Crafting visual identities <span class="script-flare">&amp;</span> brand experiences — from print to motion, concept to execution.', jp: '印刷物から映像、コンセプト立案から実行に至るまで、視覚的なアイデンティティとブランド体験を構築します。' },
+    hero_gd: { en: "&nbsp;&amp; Graphic Designer", jp: "&nbsp;＆ グラフィックデザイナー" },
+    preview_header: { en: "Visual Context", jp: "ビジュアル・コンテキスト" },
+    scroll: { en: "Scroll", jp: "スクロール" },
     sec_about_label: { en: "01 — About", jp: "01 — 概要" },
     sec_about_title: { en: "Designing with presence.", jp: "存在感のあるデザイン。" },
     about_p1: { en: "I'm a <strong>Senior Designer and Visual Artist</strong> based in Gandhinagar, India. With over a decade of experience, I specialize in shaping brands, internal communications, and creative narratives across environments.", jp: "インドのガンディーナガルを拠点とする<strong>シニアデザイナー兼ビジュアルアーティスト</strong>です。10年以上の経験を持ち、ブランド形成や社内コミュニケーション、クリエイティブなストーリーテリングを専門としています。" },
     about_p2: { en: "I work at the intersection of <strong>strategic communication and visual craft</strong> — translating complex ideas into clean, compelling design that lands. Whether it is crafting high-level executive presentations, dynamic motion sequences, or comprehensive brand guidelines.", jp: "<strong>戦略的コミュニケーションと視覚的クラフト</strong>の交差領域で活動し、複雑なアイデアを明確で魅力的なデザインに変換します。経営幹部向けのプレゼン、ダイナミックなモーション、包括的なブランドガイドラインまで幅広く対応します。" },
     about_p3: { en: "Outside the corporate brief, I compose ambient music, shoot minimalist photography, and constantly push my personal design practice on my website.", jp: "企業案件以外では、アンビエント音楽の作曲やミニマリスト写真の撮影などを行っており、常に自身のデザインの可能性を追求しています。" },
-    btn_recent: { en: "Recent Work", jp: "最近の作品" },
-    stat_yrs: { en: "Years of Experience", jp: "年の経験" },
-    stat_clients: { en: "Brand Clients", jp: "ブランド顧客" },
-    stat_pixels: { en: "Pixels Pushed", jp: "ピクセル" },
+    btn_recent: { en: "Recent Work", jp: "最近のプロジェクト" },
+    stat_yrs: { en: "Years of Experience", jp: "年の実務経験" },
+    stat_clients: { en: "Brand Clients", jp: "主要クライアント数" },
+    stat_pixels: { en: "Pixels Pushed", jp: "ピクセルへのこだわり" },
     sec_exp_label: { en: "02 — Experience", jp: "02 — 経歴" },
     sec_exp_title: { en: "The Journey.", jp: "軌跡。" },
     exp_current: { en: "Current", jp: "現在" },
     exp_prev: { en: "Previous", jp: "以前" },
+    date_kpmg: { en: "Dec 2021 — Present", jp: "2021年12月 — 現在" },
+    date_euro: { en: "May 2019 — Dec 2021", jp: "2019年5月 — 2021年12月" },
+    date_geu: { en: "Sept 2016 — April 2019", jp: "2016年9月 — 2019年4月" },
+    date_pr: { en: "Aug 2014 — Sept 2016", jp: "2014年8月 — 2016年9月" },
+    comp_kpmg: { en: "KPMG Global Services", jp: "KPMG グローバルサービス" },
+    comp_euro: { en: "Eurofins IT Solutions", jp: "ユーロフィン ITソリューションズ" },
+    comp_geu: { en: "Graphic Era University", jp: "グラフィック・エラ大学" },
+    comp_pr: { en: "Perfect Relations Pvt. Ltd.", jp: "パーフェクト・リレーションズ" },
     job_kpmg: { en: "Marketing Communications Specialist", jp: "マーケティング・コミュニケーション・スペシャリスト" },
     desc_kpmg: { en: "Leading visual communications for enterprise scale operations. Responsible for internal communications design, executive presentations, motion graphics, event collaterals, and campaign assets.", jp: "エンタープライズ規模のオペレーションにおける視覚的コミュニケーションを主導。社内コミュニケーションデザイン、エグゼクティブ向けプレゼン資料、モーショングラフィックス、イベント資料などを担当。" },
-    tag_pres: { en: "Presentations", jp: "プレゼン" }, tag_motion: { en: "Motion Graphics", jp: "モーショングラフィックス" }, tag_event: { en: "Event Collaterals", jp: "イベント資料" },
+    tag_pres: { en: "Presentations", jp: "プレゼンテーション" }, tag_motion: { en: "Motion Graphics", jp: "モーショングラフィックス" }, tag_event: { en: "Event Collaterals", jp: "イベント資料" },
     job_euro: { en: "Senior Graphic Designer", jp: "シニアグラフィックデザイナー" },
     desc_euro: { en: "Overhauled the organisation's brand design language in accordance to modern communication standards and led creative output for events, internal communications, and HR campaigns.", jp: "現代のコミュニケーション基準に従って組織のブランドデザイン言語を刷新し、イベント、社内コミュニケーション、HRキャンペーンのクリエイティブ出力を主導。" },
-    tag_brand: { en: "Brand Design", jp: "ブランドデザイン" }, tag_email: { en: "Emailers", jp: "メール配信" }, tag_hr: { en: "HR Comms", jp: "人事広報" },
-    comp_geu: { en: "Graphic Era University", jp: "グラフィック・エラ大学" },
+    tag_brand: { en: "Brand Design", jp: "ブランドデザイン" }, tag_email: { en: "Emailers", jp: "Eメール配信" }, tag_hr: { en: "HR Comms", jp: "人事広報" },
     job_geu: { en: "Graphic Designer", jp: "グラフィックデザイナー" },
     desc_geu: { en: "Managed digital design presence, print media, website visuals by collaborating with Adobe Digital Marketing Services, and Google Display campaigns.", jp: "AdobeデジタルマーケティングサービスやGoogleディスプレイキャンペーンと連携し、デジタルデザイン、印刷媒体、ウェブサイトのビジュアルを管理。" },
     tag_social: { en: "Social Media", jp: "SNS" }, tag_web: { en: "Web Design", jp: "ウェブデザイン" }, tag_google: { en: "Google Ads", jp: "Google広告" },
-    comp_pr: { en: "Perfect Relations Pvt. Ltd.", jp: "パーフェクト・リレーションズ" },
     job_pr: { en: "Executive Creatives", jp: "エグゼクティブ・クリエイティブ" },
     desc_pr: { en: "Part of the Digital Team. Designed social-media posts, created product adverts, and designed mobile application and website layouts. Managed a team under tight deadlines.", jp: "デジタルチームに所属。SNS投稿のデザイン、製品広告の作成、モバイルアプリやウェブサイトのUIレイアウトを設計。タイトな期限の中でチームを管理。" },
     tag_agency: { en: "PR Agency", jp: "PRエージェンシー" }, tag_product: { en: "Product Ads", jp: "製品広告" }, tag_app: { en: "App UI", jp: "アプリUI" },
@@ -731,111 +1118,206 @@ When I step away from design, I play the piano and compose ambient music soundsc
     lang_hi: { en: "Hindi (Bilingual)", jp: "ヒンディー語（バイリンガル）" },
     lang_jp: { en: "Japanese (N5)", jp: "日本語（N5）" },
     location: { en: "Gandhinagar, India", jp: "インド、ガンディーナガル" },
-    footer_name: { en: "Aditya<br>Sharma", jp: "アディティヤ<br>シャルマ" }
+    footer_name: { en: "Aditya<br>Sharma", jp: "アディティヤ<br>シャルマ" },
+    footer_copy: { en: "© 2026 Aditya Sharma", jp: "© 2026 アディティヤ・シャルマ" }
   };
 
   let currentLang = 'en';
-  
-  function applyLetterAnim(el, textContent) {
-    el.innerHTML = '';
-    const words = textContent.split(' ');
-    let charIndex = 0;
-    
-    words.forEach((word, wIdx) => {
-      const wordSpan = document.createElement('span');
-      if (currentLang === 'en') {
-        wordSpan.style.display = 'inline-block'; 
-        wordSpan.style.whiteSpace = 'nowrap';
-      } else {
-        wordSpan.style.display = 'inline';
-      }
-      
-      word.split('').forEach((char) => {
-        const charSpan = document.createElement('span');
-        charSpan.textContent = char; charSpan.style.opacity = '0'; charSpan.style.display = 'inline-block'; charSpan.style.transform = 'translateY(5px)';
-        charSpan.style.transition = `opacity 0.05s ease ${charIndex * 0.005}s, transform 0.05s ease ${charIndex * 0.005}s`;
-        wordSpan.appendChild(charSpan);
-        charIndex++;
-      });
-      
-      el.appendChild(wordSpan);
-      if(wIdx < words.length - 1) { const spaceSpan = document.createElement('span'); spaceSpan.innerHTML = '&nbsp;'; el.appendChild(spaceSpan); }
-    });
-
-    if(el.classList.contains('visible')) {
-      el.querySelectorAll('span > span').forEach(s => { s.style.opacity = '1'; s.style.transform = 'translateY(0)'; });
-    }
-  }
-
-  document.querySelectorAll('.letter-anim').forEach(el => applyLetterAnim(el, el.textContent));
 
   document.getElementById('langToggle').addEventListener('click', function() {
     currentLang = currentLang === 'en' ? 'jp' : 'en';
-    this.innerText = currentLang === 'en' ? 'EN / JP' : 'JP / EN';
-    
+    this.textContent = currentLang === 'en' ? 'EN / JP' : 'JP / EN';
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (translations[key]) {
-        if (el.classList.contains('letter-anim')) {
-          applyLetterAnim(el, translations[key][currentLang]);
-        } else {
-          el.innerHTML = translations[key][currentLang];
-        }
+      if (translations[key]) el.innerHTML = translations[key][currentLang];
+    });
+    roleWords.forEach((w, i) => {
+      if (roleTexts[currentLang][i]) w.textContent = roleTexts[currentLang][i];
+    });
+    document.querySelectorAll('.glitch-word').forEach(w => w.dispatchEvent(new Event('mouseleave')));
+    
+    // Update container width for new language character sizes
+    setTimeout(updateRoleWidth, 50);
+  });
+
+  // ══════════════════════════════════════════
+  //  TEXT SCRAMBLE
+  // ══════════════════════════════════════════
+  const scrambleChars = '!<>-_\\/[]{}—=+*^?#◆◇○●▲△▼▽';
+
+  function scrambleText(el) {
+    const originalHTML = el.innerHTML;
+    const text = el.textContent;
+    const len = text.length;
+    let frame = 0;
+    const totalFrames = 25;
+    const revealOrder = Array.from({ length: len }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+    function update() {
+      frame++;
+      const revealed = Math.floor((frame / totalFrames) * len);
+      const revealedSet = new Set(revealOrder.slice(0, revealed));
+      let result = '';
+      for (let i = 0; i < len; i++) {
+        if (text[i] === ' ') { result += ' '; continue; }
+        if (revealedSet.has(i)) result += text[i];
+        else result += scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+      }
+      el.textContent = result;
+      if (frame < totalFrames) requestAnimationFrame(update);
+      else el.innerHTML = originalHTML;
+    }
+    requestAnimationFrame(update);
+  }
+
+  // ══════════════════════════════════════════
+  //  COUNTER ANIMATION
+  // ══════════════════════════════════════════
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-count'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    if (isNaN(target)) return;
+    const duration = 1800;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 4);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function pulseInfinity(el) {
+    el.textContent = '∞';
+    el.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    el.style.transform = 'scale(1.3)';
+    setTimeout(() => { el.style.transform = 'scale(1)'; }, 300);
+  }
+
+  // ══════════════════════════════════════════
+  //  INTERSECTION OBSERVERS
+  // ══════════════════════════════════════════
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  const scrambleObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { setTimeout(() => scrambleText(e.target), 150); scrambleObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.scramble-text').forEach(el => scrambleObserver.observe(el));
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        if (e.target.hasAttribute('data-count')) animateCounter(e.target);
+        else if (e.target.hasAttribute('data-count-symbol')) pulseInfinity(e.target);
+        counterObserver.unobserve(e.target);
       }
     });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num[data-count], .stat-num[data-count-symbol]').forEach(el => counterObserver.observe(el));
 
-    document.querySelectorAll('.glitch-word').forEach(wordEl => {
-      wordEl.dispatchEvent(new Event('mouseleave'));
+  // ══════════════════════════════════════════
+  //  SOFTWARE HOVER CASCADE
+  // ══════════════════════════════════════════
+  const softwareItems = document.querySelectorAll('.software-item');
+  softwareItems.forEach((item, i) => {
+    item.addEventListener('mouseenter', () => {
+      if (softwareItems[i - 1]) softwareItems[i - 1].classList.add('near-hover');
+      if (softwareItems[i + 1]) softwareItems[i + 1].classList.add('near-hover');
+    });
+    item.addEventListener('mouseleave', () => {
+      if (softwareItems[i - 1]) softwareItems[i - 1].classList.remove('near-hover');
+      if (softwareItems[i + 1]) softwareItems[i + 1].classList.remove('near-hover');
     });
   });
 
-  // ── DESKTOP ONLY LOGIC ──
+  // ══════════════════════════════════════════
+  //  DESKTOP-ONLY INTERACTIONS
+  // ══════════════════════════════════════════
   if (isDesktop) {
     const cursor = document.getElementById('cursor');
     const trail = document.getElementById('cursorTrail');
-    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-    let trailX = mouseX, trailY = mouseY;
-    
-    const updateCursorTransform = () => {
-      const scale = cursor.classList.contains('clicking') ? 'scale(0.6)' : 'scale(1)';
-      cursor.style.transform = `translate3d(${mouseX - 7}px, ${mouseY - 7}px, 0) ${scale}`;
-    };
-
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; updateCursorTransform(); });
-    document.addEventListener('mousedown', () => { cursor.classList.add('clicking'); updateCursorTransform(); });
-    document.addEventListener('mouseup', () => { cursor.classList.remove('clicking'); updateCursorTransform(); });
-
     const workPreview = document.getElementById('workPreview');
     const previewGrid = document.getElementById('previewGrid');
+    const heroContent = document.getElementById('heroContent');
+    const heroSection = document.querySelector('.hero');
+
+    const orbs = [
+      document.getElementById('orb0'),
+      document.getElementById('orb1'),
+      document.getElementById('orb2'),
+      document.getElementById('orb3'),
+    ];
+    const orbPositions = orbs.map(() => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+    const orbOpacities = [0.35, 0.25, 0.18, 0.1];
+
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let trailX = mouseX, trailY = mouseY;
+    let trailVX = 0, trailVY = 0;
+    let previewX = mouseX, previewY = mouseY;
     let targetPreviewX = mouseX, targetPreviewY = mouseY;
-    let currentPreviewX = mouseX, currentPreviewY = mouseY;
 
-    // OPTIMIZED: Idle animation check to avoid burning CPU when mouse is still
-    function animateDesktopPhysics() {
-      const deltaTrailX = mouseX - trailX;
-      const deltaTrailY = mouseY - trailY;
-      const deltaPreviewX = targetPreviewX - currentPreviewX;
-      const deltaPreviewY = targetPreviewY - currentPreviewY;
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      // Supply variables to Global Spotlight 
+      document.body.style.setProperty('--mouse-x', `${mouseX}px`);
+      document.body.style.setProperty('--mouse-y', `${mouseY}px`);
+    }, { passive: true });
 
-      if (Math.abs(deltaTrailX) > 0.1 || Math.abs(deltaTrailY) > 0.1 ||
-          Math.abs(deltaPreviewX) > 0.1 || Math.abs(deltaPreviewY) > 0.1) {
-          
-          trailX += deltaTrailX * 0.2; 
-          trailY += deltaTrailY * 0.2;
-          trail.style.transform = `translate3d(${trailX - 20}px, ${trailY - 20}px, 0)`;
+    let lastTime = 0;
+    function tick(time) {
+      if (time - lastTime < 8) { requestAnimationFrame(tick); return; }
+      lastTime = time;
 
-          currentPreviewX += deltaPreviewX * 0.12; 
-          currentPreviewY += deltaPreviewY * 0.12;
-          workPreview.style.transform = `translate3d(${currentPreviewX}px, ${currentPreviewY}px, 0)`;
+      cursor.style.transform = `translate3d(${mouseX - 7}px, ${mouseY - 7}px, 0)`;
+
+      trailVX += (mouseX - trailX) * 0.08;
+      trailVY += (mouseY - trailY) * 0.08;
+      trailVX *= 0.72;
+      trailVY *= 0.72;
+      trailX += trailVX;
+      trailY += trailVY;
+      trail.style.transform = `translate3d(${trailX - 20}px, ${trailY - 20}px, 0)`;
+
+      let prevX = mouseX, prevY = mouseY;
+      for (let i = 0; i < orbs.length; i++) {
+        const pos = orbPositions[i];
+        const lag = 0.12 - i * 0.02;
+        pos.x += (prevX - pos.x) * lag;
+        pos.y += (prevY - pos.y) * lag;
+        const sz = [8, 6, 5, 4][i];
+        orbs[i].style.transform = `translate3d(${pos.x - sz / 2}px, ${pos.y - sz / 2}px, 0)`;
+        orbs[i].style.opacity = orbOpacities[i];
+        prevX = pos.x;
+        prevY = pos.y;
       }
-      requestAnimationFrame(animateDesktopPhysics);
+
+      const dpx = targetPreviewX - previewX;
+      const dpy = targetPreviewY - previewY;
+      if (Math.abs(dpx) > 0.5 || Math.abs(dpy) > 0.5) {
+        previewX += dpx * 0.1;
+        previewY += dpy * 0.1;
+        workPreview.style.transform = `translate3d(${previewX}px, ${previewY}px, 0)`;
+      }
+
+      requestAnimationFrame(tick);
     }
-    animateDesktopPhysics();
+    requestAnimationFrame(tick);
+
+    document.addEventListener('mousedown', () => { cursor.style.width = '8px'; cursor.style.height = '8px'; });
+    document.addEventListener('mouseup', () => { cursor.style.width = '14px'; cursor.style.height = '14px'; });
 
     document.querySelectorAll('a, button, .glass-card, .software-item').forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursor.style.width = '40px'; cursor.style.height = '40px';
-        cursor.style.background = 'var(--grad-primary)'; cursor.style.mixBlendMode = 'normal'; cursor.style.border = 'none';
+        cursor.style.background = 'var(--grad-primary)'; cursor.style.mixBlendMode = 'normal';
       });
       el.addEventListener('mouseleave', () => {
         cursor.style.width = '14px'; cursor.style.height = '14px';
@@ -843,10 +1325,20 @@ When I step away from design, I play the piano and compose ambient music soundsc
       });
     });
 
+    heroSection.addEventListener('mousemove', e => {
+      const rect = heroSection.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      heroContent.style.transform = `perspective(1200px) rotateY(${x * 2.5}deg) rotateX(${-y * 2.5}deg)`;
+    }, { passive: true });
+    heroSection.addEventListener('mouseleave', () => {
+      heroContent.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg)';
+    });
+
     document.querySelectorAll('.preview-trigger').forEach(item => {
       item.addEventListener('mouseenter', () => {
         const images = item.getAttribute('data-images').split(',');
-        previewGrid.innerHTML = images.map(img => `<img src="${img.trim()}" alt="Work Preview">`).join('');
+        previewGrid.innerHTML = images.map(img => `<img src="${img.trim()}" alt="Work Preview" loading="lazy">`).join('');
         workPreview.classList.add('active');
       });
       item.addEventListener('mousemove', () => {
@@ -854,148 +1346,160 @@ When I step away from design, I play the piano and compose ambient music soundsc
         if (targetPreviewX + 480 > window.innerWidth) targetPreviewX = mouseX - 480;
         if (targetPreviewY + 400 > window.innerHeight) targetPreviewY = mouseY - 400;
       });
-      item.addEventListener('mouseleave', () => { workPreview.classList.remove('active'); });
+      item.addEventListener('mouseleave', () => workPreview.classList.remove('active'));
     });
 
-    // OPTIMIZED: Batched mousemove calculations in requestAnimationFrame to avoid DOM thrashing
     document.querySelectorAll('.glass-card, .portfolio-cta').forEach(card => {
-      let rafId = null;
+      let tiltRaf = null;
       card.addEventListener('mousemove', e => {
-        if(rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
+        if (tiltRaf) cancelAnimationFrame(tiltRaf);
+        tiltRaf = requestAnimationFrame(() => {
           const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-          card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`);
-          if(card.classList.contains('tilt')) {
-            const multiplier = 10; 
-            const xRotate = multiplier * ((y - rect.height / 2) / rect.height);
-            const yRotate = -multiplier * ((x - rect.width / 2) / rect.width);
-            card.style.transform = `perspective(1000px) rotateX(${xRotate}deg) rotateY(${yRotate}deg) scale3d(1.02, 1.02, 1.02)`;
-            card.style.transition = 'none'; 
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-local-x', `${x}px`);
+          card.style.setProperty('--mouse-local-y', `${y}px`);
+          if (card.classList.contains('tilt')) {
+            const mx = 8;
+            const rx = mx * ((y - rect.height / 2) / rect.height);
+            const ry = -mx * ((x - rect.width / 2) / rect.width);
+            card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.02, 1.02, 1.02)`;
+            card.style.transition = 'none';
           }
         });
       });
       card.addEventListener('mouseleave', () => {
-        if(card.classList.contains('tilt')) {
-          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-          card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'; 
+        if (card.classList.contains('tilt')) {
+          card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+          card.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
         }
       });
     });
 
-    document.querySelectorAll('.portfolio-cta').forEach(btn => {
-      let rafId = null;
+    // Added Magnetic interaction to global links
+    document.querySelectorAll('.portfolio-cta, .magnetic-el').forEach(btn => {
+      let magRaf = null;
       btn.addEventListener('mousemove', function(e) {
-        if(rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-            const rect = this.getBoundingClientRect();
-            const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.3; 
-            const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.3;
-            this.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+        if (magRaf) cancelAnimationFrame(magRaf);
+        magRaf = requestAnimationFrame(() => {
+          const rect = this.getBoundingClientRect();
+          const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.25;
+          const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.25;
+          this.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+          this.style.transition = 'none';
         });
       });
       btn.addEventListener('mouseleave', function() {
         this.style.transform = 'translate3d(0,0,0)';
         this.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
       });
-      btn.addEventListener('mouseenter', function() { this.style.transition = 'none'; });
     });
 
-    // Smart Katakana Glitch for Desktop
-    const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
+    const glitchMap = {
+      Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'],
+      Sharma: ['シ', 'ャ', 'ル', 'マ', '', '']
+    };
+
     document.querySelectorAll('.glitch-word').forEach(wordEl => {
       const origWord = wordEl.getAttribute('data-word');
       const spans = wordEl.querySelectorAll('span');
-      const katakanaChars = glitchScripts[origWord];
-      const englishChars = origWord.split('');
+      const katakana = glitchMap[origWord];
+      const english = origWord.split('');
       let timeouts = [];
 
-      const doGlitch = (isHovering) => {
-        timeouts.forEach(t => clearTimeout(t)); timeouts = [];
-        
-        const showEnglish = (currentLang === 'en' && !isHovering) || (currentLang === 'jp' && isHovering);
-        const targetScript = showEnglish ? englishChars : katakanaChars;
+      function doGlitch(hovering) {
+        timeouts.forEach(clearTimeout);
+        timeouts = [];
+        const showEn = (currentLang === 'en' && !hovering) || (currentLang === 'jp' && hovering);
+        const chars = showEn ? english : katakana;
 
         spans.forEach((span, i) => {
+          const flickerCount = 2 + Math.floor(Math.random() * 3);
+          for (let f = 0; f < flickerCount; f++) {
+            const ft = setTimeout(() => {
+              span.style.opacity = '0.6';
+              span.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            }, 30 + f * 40 + i * 25);
+            timeouts.push(ft);
+          }
+
           const t = setTimeout(() => {
-            if (targetScript[i] === '') { span.style.display = 'none'; } 
-            else { span.style.display = 'inline-block'; span.textContent = targetScript[i]; }
-            if (showEnglish) span.classList.remove('block-font'); else span.classList.add('block-font');
-          }, Math.random() * 350);
+            span.style.opacity = '1';
+            if (chars[i] === '') { span.style.display = 'none'; }
+            else {
+              span.style.display = 'inline-block';
+              span.textContent = chars[i];
+            }
+            if (showEn) span.classList.remove('block-font');
+            else span.classList.add('block-font');
+          }, 30 + flickerCount * 40 + i * 25 + 20);
           timeouts.push(t);
         });
-      };
+      }
 
       wordEl.addEventListener('mouseenter', () => doGlitch(true));
       wordEl.addEventListener('mouseleave', () => doGlitch(false));
     });
-  } 
 
-  // ── MOBILE ONLY LOGIC ──
+  }
+  // ══════════════════════════════════════════
+  //  MOBILE-ONLY LOGIC
+  // ══════════════════════════════════════════
   else {
     const mobileCards = document.querySelectorAll('.glass-card, .portfolio-cta');
-    lenis.on('scroll', () => {
-      const vh = window.innerHeight;
-      mobileCards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        if (rect.top < vh && rect.bottom > 0) {
-          const percent = (vh - rect.top) / (vh + rect.height);
-          const y = percent * rect.height;
-          const x = (0.5 + Math.sin(percent * Math.PI) * 0.3) * rect.width;
-          card.style.setProperty('--mouse-x', `${x}px`);
-          card.style.setProperty('--mouse-y', `${y}px`);
-        }
-      });
-    });
+    let mobileScrollTick = false;
+    window.addEventListener('scroll', () => {
+      if (!mobileScrollTick) {
+        requestAnimationFrame(() => {
+          const vh = window.innerHeight;
+          mobileCards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            if (rect.top < vh && rect.bottom > 0) {
+              const pct = (vh - rect.top) / (vh + rect.height);
+              card.style.setProperty('--mouse-local-x', `${(0.5 + Math.sin(pct * Math.PI) * 0.3) * rect.width}px`);
+              card.style.setProperty('--mouse-local-y', `${pct * rect.height}px`);
+            }
+          });
+          mobileScrollTick = false;
+        });
+        mobileScrollTick = true;
+      }
+    }, { passive: true });
 
-    const glitchScripts = { Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'], Sharma: ['シ', 'ャ', 'ル', 'マ', '', ''] };
-    const mobileGlitchObserver = new IntersectionObserver((entries) => {
+    const glitchMap = {
+      Aditya: ['ア', 'デ', 'ィ', 'テ', 'ィ', 'ヤ'],
+      Sharma: ['シ', 'ャ', 'ル', 'マ', '', '']
+    };
+    const mobileGlitchObs = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const wordEl = entry.target;
           const origWord = wordEl.getAttribute('data-word');
           const spans = wordEl.querySelectorAll('span');
-          const katakanaChars = glitchScripts[origWord];
-          const englishChars = origWord.split('');
-          
-          spans.forEach((span, i) => {
+          const katakana = glitchMap[origWord];
+          const english = origWord.split('');
+          spans.forEach((s, i) => {
             setTimeout(() => {
-              if (katakanaChars[i] === '') span.style.display = 'none';
-              else { span.style.display = 'inline-block'; span.textContent = katakanaChars[i]; span.classList.add('block-font'); }
+              if (katakana[i] === '') s.style.display = 'none';
+              else { s.style.display = 'inline-block'; s.textContent = katakana[i]; s.classList.add('block-font'); }
             }, Math.random() * 350);
           });
-
           setTimeout(() => {
-            if(currentLang === 'jp') return; 
-            spans.forEach((span, i) => {
+            if (currentLang === 'jp') return;
+            spans.forEach((s, i) => {
               setTimeout(() => {
-                span.style.display = 'inline-block'; span.textContent = englishChars[i]; span.classList.remove('block-font');
+                s.style.display = 'inline-block'; s.textContent = english[i]; s.classList.remove('block-font');
               }, Math.random() * 350);
             });
           }, 2000);
-          
-          mobileGlitchObserver.unobserve(wordEl);
+          mobileGlitchObs.unobserve(wordEl);
         }
       });
     }, { threshold: 0.5 });
-    
-    document.querySelectorAll('.glitch-word').forEach(el => mobileGlitchObserver.observe(el));
+    document.querySelectorAll('.glitch-word').forEach(el => mobileGlitchObs.observe(el));
   }
 
-  // ── GLOBAL OBSERVERS ──
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { 
-        e.target.classList.add('visible'); 
-        if (e.target.classList.contains('letter-anim')) {
-          e.target.querySelectorAll('span > span').forEach(span => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; });
-        }
-        io.unobserve(e.target); 
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-  
-  document.querySelectorAll('.reveal, .letter-anim').forEach(el => io.observe(el));
+})();
 </script>
 </body>
 </html>
